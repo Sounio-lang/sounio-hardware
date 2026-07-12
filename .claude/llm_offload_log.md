@@ -26,3 +26,17 @@
   PASS remains the substantive algebra review; this rerun is not represented
   as a second PASS.
 - Raw local result: `/tmp/llm-offload-WYHEHE/` (ephemeral).
+
+## 2026-07-12 - EISA-H ZD-pair RTL v1
+
+- Target: `rtl/eisa_h_sed16_zd_pair_v1.sv`
+- Task: `math-review`
+- Provider: xAI/Grok 4.3
+- Outcome: NO MATHEMATICAL CONTENT TO REVIEW
+- Classification: the provider found no separate derivation to review in the
+  executable RTL. This is recorded as an attempted mandatory review, not PASS.
+- Orthogonal technical review: internal adversarial agent found seven
+  implementation-proof gaps; all were addressed before commit and re-audited.
+- Evidence boundary: RTL simulation only. No synthesis, formal, FPGA, ASIC,
+  timing, power, area, or silicon claim.
+- Raw local result: `/tmp/llm-offload-gpnQJn/` (ephemeral).

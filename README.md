@@ -12,14 +12,17 @@ Run the current gate with:
 
 ```sh
 bash scripts/gate_zd_pair_contract.sh
+bash scripts/gate_zd_pair_rtl.sh
 ```
 
 ## Claim boundary
 
-At this stage the repository proves only that ten required cases are
-deterministic and that eight specified mutation classes are rejected. It does not yet
-claim an RTL implementation, synthesis result, timing result, formal proof, or
-silicon measurement.
+The software contract proves that ten required cases are deterministic and
+that eight specified mutation classes are rejected. The RTL gate simulates nine
+fixed-width cases, six adversarial boundaries, and all 1,024 signed basis
+combinations on an iterative 256-MAC core; malformed
+operand shape remains an interface-layer rejection. No synthesis, formal
+equivalence, timing, power, area, FPGA, ASIC, or silicon result is claimed.
 
 ## Ownership
 

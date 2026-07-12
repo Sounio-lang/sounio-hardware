@@ -15,3 +15,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify ordered sedenion zero-divisor contract
         run: bash scripts/gate_zd_pair_contract.sh
+
+  eisa-h-zd-rtl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Icarus Verilog
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq iverilog
+      - name: Simulate iterative ordered sedenion zero-divisor core
+        run: bash scripts/gate_zd_pair_rtl.sh
