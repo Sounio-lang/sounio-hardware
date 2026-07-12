@@ -4,6 +4,7 @@
   "semantic_contract_id": "eisa_h.sedenion_zd_pair.v1",
   "semantic_contract_sha256": "122fb6a9cac56037bdbe93d40d7c33d87a7138eaac4601a6d32c43ece83b69c3",
   "module": "eisa_h_sed16_zd_pair_v1",
+  "interface": "packed-16x64-coefficient-buses",
   "datapath": {
     "architecture": "iterative-single-mac",
     "basis_products": 256,
@@ -21,8 +22,8 @@
     "interface_rejected_cases": ["invalid-operand-shape"]
   },
   "artifacts": {
-    "rtl_sha256": "ddef16ab5da862b1cdb4cb99d0dc2de2d266d69535519377136993388da60392",
-    "testbench_sha256": "f68fb8367185c66f7e8d8f230cee74cdd532e66f3694ab31c0388756f4de0b16",
+    "rtl_sha256": "90fc920d02eb9719fec3d63835e460bad8ce5636fc94002ff4620958b5b27157",
+    "testbench_sha256": "777b27d4b299164927a4c6357e8f891d9fb0a4802fe5bf5a44132315947e304d",
     "semantic_vectors_sha256": "10ca19a0d08c313793869bf8db30fb48d5a7df6107c92a5afabaa4be01e08a2d"
   },
   "expected_simulation_receipt": "EISA_H_ZD_PAIR_RTL_PASS rtl_cases=15 contract_cases=9 adversarial_cases=6 basis_sign_combinations=1024 interface_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED",

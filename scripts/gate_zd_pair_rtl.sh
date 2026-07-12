@@ -14,6 +14,8 @@ bash "$ROOT/scripts/gate_zd_pair_contract.sh" > "$TMP/contract.log"
 grep -Fx "EISA_H_ZD_PAIR_CONTRACT_PASS" "$TMP/contract.log" >/dev/null
 python3 "$ROOT/tools/eisa_h/validate_rtl_manifest.py" "$ROOT" > "$TMP/manifest.log"
 grep -F "RTL_MANIFEST_PASS " "$TMP/manifest.log" >/dev/null
+python3 "$ROOT/tools/eisa_h/check_basis_rom.py" "$ROOT" > "$TMP/basis-rom.log"
+grep -F "EISA_H_BASIS_ROM_PASS " "$TMP/basis-rom.log" >/dev/null
 
 iverilog -g2012 -Wall -s tb_sed16_zd_pair_v1 \
   -o "$TMP/tb_sed16_zd_pair_v1.vvp" \
@@ -41,14 +43,22 @@ run_rtl_mutation() {
   MUTATION_COUNT=$((MUTATION_COUNT + 1))
 }
 
-run_rtl_mutation sign '0,/cd_sigma = -1;/s//cd_sigma = 1;/'
+run_rtl_mutation sign "s/256'hcd4c/256'hdd4c/"
 run_rtl_mutation counter "s/mac_cycles <= mac_cycles + 9'd1;/mac_cycles <= mac_cycles + 9'd0;/"
 run_rtl_mutation threshold 's/1518500249/1518500250/g'
 run_rtl_mutation signedness 's/raw = left \* right;/raw = left;/'
 run_rtl_mutation handshake "s/assign ready = !busy && !finalize;/assign ready = 1'b1;/"
 
-sed 's/ddef16ab5da862b1cdb4cb99d0dc2de2d266d69535519377136993388da60392/0000000000000000000000000000000000000000000000000000000000000000/' \
-  "$ROOT/spec/eisa_h/sedenion_zd_pair_rtl_v1.json" > "$TMP/manifest-tamper.json"
+python3 - "$ROOT/spec/eisa_h/sedenion_zd_pair_rtl_v1.json" "$TMP/manifest-tamper.json" <<'PY'
+import json
+import pathlib
+import sys
+
+source, target = map(pathlib.Path, sys.argv[1:])
+value = json.loads(source.read_text(encoding="utf-8"))
+value["artifacts"]["rtl_sha256"] = "0" * 64
+target.write_text(json.dumps(value, sort_keys=True), encoding="utf-8")
+PY
 if python3 "$ROOT/tools/eisa_h/validate_rtl_manifest.py" "$ROOT" "$TMP/manifest-tamper.json" > "$TMP/manifest-tamper.log" 2>&1; then
   printf '%s\n' "RTL manifest mutation unexpectedly passed" >&2
   exit 1

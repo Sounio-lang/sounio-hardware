@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "synthesis_id": "eisa_h.sedenion_zd_pair.synth.v1",
+  "rtl_implementation_id": "eisa_h.sedenion_zd_pair.rtl.v1",
+  "top_module": "eisa_h_sed16_zd_pair_v1",
+  "source_rtl_sha256": "90fc920d02eb9719fec3d63835e460bad8ce5636fc94002ff4620958b5b27157",
+  "recipe": {
+    "path": "scripts/yosys/synth_zd_pair_v1.ys",
+    "sha256": "3e37c282e0b291ce3ddf1b542456db68f20b0b4dfb3d56a1d5ca8efd5f50dae8"
+  },
+  "abi": {
+    "coefficient_encoding": "signed-twos-complement-i64",
+    "coefficient_width_bits": 64,
+    "coefficient_count": 16,
+    "lane_order": "lane-i-is-bits-(64*i)+:64",
+    "lane_zero_position": "bits-63:0",
+    "intra_lane_bit_order": "lsb0",
+    "packed_bus_signed": true,
+    "clock_edge": "rising",
+    "reset": "asynchronous-active-low",
+    "start_acceptance": "rising-edge-when-ready"
+  },
+  "tool": {
+    "name": "yosys",
+    "reference_version": "0.33",
+    "target": "generic-cell-netlist"
+  },
+  "expected_ports": {
+    "clk": ["input", 1],
+    "rst_n": ["input", 1],
+    "start": ["input", 1],
+    "lhs_flat": ["input", 1024],
+    "rhs_flat": ["input", 1024],
+    "ready": ["output", 1],
+    "busy": ["output", 1],
+    "done": ["output", 1],
+    "classification": ["output", 2],
+    "error_code": ["output", 3],
+    "product_is_zero": ["output", 1],
+    "product_flat": ["output", 1024],
+    "mac_cycles": ["output", 9]
+  },
+  "reference_statistics": {
+    "num_cells": 38133,
+    "num_processes": 0,
+    "num_memories": 0,
+    "sequential_cells": 4122
+  },
+  "reference_artifacts": {
+    "stat_sha256": "8bbe66c3328a7284bee1ef87ccc69d4fcc936f9114beafe98e818ca32a5af095",
+    "netlist_sha256": "43cda27f4bf2ec93cae841d3e26a375079a35a914cc107ef32b1fc7ca542e316"
+  },
+  "claim": {
+    "execution_surface": "generic_synthesis",
+    "technology_mapping": "NOT_CLAIMED",
+    "post_synthesis_equivalence": "NOT_CLAIMED",
+    "timing": "NOT_CLAIMED",
+    "power": "NOT_CLAIMED",
+    "area": "GENERIC_CELL_COUNT_ONLY",
+    "determinism": "SAME_TOOL_SAME_HOST_REPLAY_ONLY",
+    "fpga": "NOT_CLAIMED",
+    "asic": "NOT_CLAIMED",
+    "silicon": "NOT_CLAIMED"
+  }
+}

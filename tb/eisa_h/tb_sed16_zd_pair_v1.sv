@@ -15,15 +15,15 @@ module tb_sed16_zd_pair_v1;
     logic clk = 1'b0;
     logic rst_n = 1'b0;
     logic start = 1'b0;
-    logic signed [63:0] lhs [0:15];
-    logic signed [63:0] rhs [0:15];
+    logic signed [1023:0] lhs_flat;
+    logic signed [1023:0] rhs_flat;
     logic ready;
     logic busy;
     logic done;
     logic [1:0] classification;
     logic [2:0] error_code;
     logic product_is_zero;
-    wire signed [63:0] product [0:15];
+    wire signed [1023:0] product_flat;
     logic signed [63:0] expected_product [0:15];
     logic [8:0] mac_cycles;
     integer failures = 0;
@@ -32,20 +32,17 @@ module tb_sed16_zd_pair_v1;
     integer k;
 
     eisa_h_sed16_zd_pair_v1 dut (
-        .clk(clk), .rst_n(rst_n), .start(start), .lhs(lhs), .rhs(rhs),
+        .clk(clk), .rst_n(rst_n), .start(start), .lhs_flat(lhs_flat), .rhs_flat(rhs_flat),
         .ready(ready), .busy(busy), .done(done), .classification(classification),
         .error_code(error_code), .product_is_zero(product_is_zero),
-        .product(product), .mac_cycles(mac_cycles)
+        .product_flat(product_flat), .mac_cycles(mac_cycles)
     );
     always #5 clk = ~clk;
 
     task automatic clear_operands;
-        integer n;
         begin
-            for (n = 0; n < 16; n = n + 1) begin
-                lhs[n] = 64'sd0;
-                rhs[n] = 64'sd0;
-            end
+            lhs_flat = 1024'd0;
+            rhs_flat = 1024'd0;
         end
     endtask
 
@@ -141,8 +138,9 @@ module tb_sed16_zd_pair_v1;
         input integer index;
         input signed [63:0] expected;
         begin
-            if (product[index] !== expected) begin
-                $display("FAIL case=%s product[%0d]=%0d expected=%0d", name, index, product[index], expected);
+            if ($signed(product_flat[(index * 64) +: 64]) !== expected) begin
+                $display("FAIL case=%s product[%0d]=%0d expected=%0d", name, index,
+                    $signed(product_flat[(index * 64) +: 64]), expected);
                 failures = failures + 1;
             end
         end
@@ -191,8 +189,8 @@ module tb_sed16_zd_pair_v1;
                         for (right_sign = -1; right_sign <= 1; right_sign = right_sign + 2) begin
                             clear_operands();
                             clear_expected();
-                            lhs[i] = left_sign;
-                            rhs[j] = right_sign;
+                            lhs_flat[(i * 64) +: 64] = left_sign;
+                            rhs_flat[(j * 64) +: 64] = right_sign;
                             expected_product[i ^ j] = golden_basis_sign(i, j) * left_sign * right_sign;
                             name = $sformatf("basis-e%0d-e%0d-l%0d-r%0d", i, j, left_sign, right_sign);
                             run_case(name, CLASS_NONZERO_PRODUCT, ERR_NONE, 256);
@@ -209,7 +207,7 @@ module tb_sed16_zd_pair_v1;
     task automatic verify_reset_in_flight;
         integer n;
         begin
-            clear_operands(); lhs[1] = 1; rhs[2] = 1;
+            clear_operands(); lhs_flat[(1 * 64) +: 64] = 1; rhs_flat[(2 * 64) +: 64] = 1;
             @(negedge clk); start = 1'b1;
             @(posedge clk); #1; start = 1'b0;
             repeat (5) @(posedge clk);
@@ -220,8 +218,9 @@ module tb_sed16_zd_pair_v1;
                 failures = failures + 1;
             end
             for (n = 0; n < 16; n = n + 1)
-                if (product[n] !== 0) begin
-                    $display("FAIL reset-in-flight product[%0d]=%0d", n, product[n]);
+                if ($signed(product_flat[(n * 64) +: 64]) !== 0) begin
+                    $display("FAIL reset-in-flight product[%0d]=%0d", n,
+                        $signed(product_flat[(n * 64) +: 64]));
                     failures = failures + 1;
                 end
             @(negedge clk); rst_n = 1'b1;
@@ -236,56 +235,62 @@ module tb_sed16_zd_pair_v1;
         verify_reset_in_flight();
         verify_basis_table();
 
-        clear_operands(); lhs[3] = 1; lhs[10] = 1; rhs[6] = 1; rhs[15] = -1;
+        clear_operands(); lhs_flat[(3 * 64) +: 64] = 1; lhs_flat[(10 * 64) +: 64] = 1;
+        rhs_flat[(6 * 64) +: 64] = 1; rhs_flat[(15 * 64) +: 64] = -1;
         run_case("canonical-zero-divisor-pair", CLASS_EXACT_ZD_PAIR, ERR_NONE, 256);
         expect_zero_product("canonical-zero-divisor-pair");
 
-        clear_operands(); lhs[1] = 1; rhs[2] = 1;
+        clear_operands(); lhs_flat[(1 * 64) +: 64] = 1; rhs_flat[(2 * 64) +: 64] = 1;
         run_case("basis-orientation-e1-e2", CLASS_NONZERO_PRODUCT, ERR_NONE, 256);
         clear_expected(); expected_product[3] = 1;
         expect_full_product("basis-orientation-e1-e2");
 
-        clear_operands(); lhs[2] = 1; rhs[1] = 1;
+        clear_operands(); lhs_flat[(2 * 64) +: 64] = 1; rhs_flat[(1 * 64) +: 64] = 1;
         run_case("basis-orientation-e2-e1", CLASS_NONZERO_PRODUCT, ERR_NONE, 256);
         clear_expected(); expected_product[3] = -1;
         expect_full_product("basis-orientation-e2-e1");
 
-        clear_operands(); lhs[3] = 1; lhs[10] = 1; rhs[6] = 1; rhs[15] = 1;
+        clear_operands(); lhs_flat[(3 * 64) +: 64] = 1; lhs_flat[(10 * 64) +: 64] = 1;
+        rhs_flat[(6 * 64) +: 64] = 1; rhs_flat[(15 * 64) +: 64] = 1;
         run_case("same-support-sign-tamper", CLASS_NONZERO_PRODUCT, ERR_NONE, 256);
         clear_expected(); expected_product[5] = 2; expected_product[12] = 2;
         expect_full_product("same-support-sign-tamper");
 
-        clear_operands(); rhs[0] = 1;
+        clear_operands(); rhs_flat[(0 * 64) +: 64] = 1;
         run_case("zero-left-operand", CLASS_INVALID_ZERO_OPERAND, ERR_NONE, 0);
 
-        clear_operands(); lhs[0] = 2; rhs[0] = 1;
+        clear_operands(); lhs_flat[(0 * 64) +: 64] = 2; rhs_flat[(0 * 64) +: 64] = 1;
         run_case("unsupported-coefficient-two", CLASS_ARITHMETIC_ERROR, ERR_UNSUPPORTED_DOMAIN, 0);
 
-        clear_operands(); lhs[0] = 64'sd4294967296; rhs[0] = 64'sd4294967296;
+        clear_operands(); lhs_flat[(0 * 64) +: 64] = 64'sd4294967296;
+        rhs_flat[(0 * 64) +: 64] = 64'sd4294967296;
         run_case("overflow-risk-forged-coefficient", CLASS_ARITHMETIC_ERROR, ERR_OVERFLOW_RISK, 0);
 
-        clear_operands(); rhs[0] = 64'sd4294967296;
+        clear_operands(); rhs_flat[(0 * 64) +: 64] = 64'sd4294967296;
         run_case("zero-left-overflow-right", CLASS_ARITHMETIC_ERROR, ERR_OVERFLOW_RISK, 0);
 
-        clear_operands(); lhs[0] = 1; lhs[1] = 1; lhs[2] = 1; rhs[0] = 1;
+        clear_operands(); lhs_flat[(0 * 64) +: 64] = 1; lhs_flat[(1 * 64) +: 64] = 1;
+        lhs_flat[(2 * 64) +: 64] = 1; rhs_flat[(0 * 64) +: 64] = 1;
         run_case("too-many-nonzero-coefficients", CLASS_ARITHMETIC_ERROR, ERR_TOO_MANY_NONZERO, 0);
 
-        clear_operands(); lhs[0] = 64'sd1518500249; rhs[0] = 1;
+        clear_operands(); lhs_flat[(0 * 64) +: 64] = 64'sd1518500249; rhs_flat[(0 * 64) +: 64] = 1;
         run_case("positive-limit-unsupported", CLASS_ARITHMETIC_ERROR, ERR_UNSUPPORTED_DOMAIN, 0);
 
-        clear_operands(); lhs[0] = 64'sd1518500250; rhs[0] = 1;
+        clear_operands(); lhs_flat[(0 * 64) +: 64] = 64'sd1518500250; rhs_flat[(0 * 64) +: 64] = 1;
         run_case("positive-limit-plus-one-overflow", CLASS_ARITHMETIC_ERROR, ERR_OVERFLOW_RISK, 0);
 
-        clear_operands(); lhs[0] = -64'sd1518500249; rhs[0] = 1;
+        clear_operands(); lhs_flat[(0 * 64) +: 64] = -64'sd1518500249; rhs_flat[(0 * 64) +: 64] = 1;
         run_case("negative-limit-unsupported", CLASS_ARITHMETIC_ERROR, ERR_UNSUPPORTED_DOMAIN, 0);
 
-        clear_operands(); lhs[0] = -64'sd1518500250; rhs[0] = 1;
+        clear_operands(); lhs_flat[(0 * 64) +: 64] = -64'sd1518500250; rhs_flat[(0 * 64) +: 64] = 1;
         run_case("negative-limit-minus-one-overflow", CLASS_ARITHMETIC_ERROR, ERR_OVERFLOW_RISK, 0);
 
-        clear_operands(); rhs[0] = -64'sd1518500250;
+        clear_operands(); rhs_flat[(0 * 64) +: 64] = -64'sd1518500250;
         run_case("zero-left-negative-overflow", CLASS_ARITHMETIC_ERROR, ERR_OVERFLOW_RISK, 0);
 
-        clear_operands(); lhs[0] = 64'sd1518500250; lhs[1] = 1; lhs[2] = 1; rhs[0] = 2;
+        clear_operands(); lhs_flat[(0 * 64) +: 64] = 64'sd1518500250;
+        lhs_flat[(1 * 64) +: 64] = 1; lhs_flat[(2 * 64) +: 64] = 1;
+        rhs_flat[(0 * 64) +: 64] = 2;
         run_case("overflow-precedes-support-and-domain", CLASS_ARITHMETIC_ERROR, ERR_OVERFLOW_RISK, 0);
 
         if (failures != 0) begin
