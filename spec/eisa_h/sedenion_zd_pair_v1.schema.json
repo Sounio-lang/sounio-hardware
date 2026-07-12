@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sounio.org/hardware/spec/eisa_h/sedenion_zd_pair_v1.schema.json",
+  "title": "EISA-H ordered sedenion zero-divisor pair contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "format",
+    "basis_table",
+    "operand_domain",
+    "arithmetic",
+    "classifications",
+    "receipt"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "contract_id": { "const": "eisa_h.sedenion_zd_pair.v1" },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algebra", "dimension", "basis_order", "ordered_operands"],
+      "properties": {
+        "algebra": { "const": "cayley-dickson-sedenion" },
+        "dimension": { "const": 16 },
+        "basis_order": { "const": "e0..e15" },
+        "ordered_operands": { "const": true }
+      }
+    },
+    "basis_table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "encoding", "sha256"],
+      "properties": {
+        "rule": { "const": "recursive-cayley-dickson-v1" },
+        "encoding": { "const": "row-major-int8-signs" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "operand_domain": { "type": "object" },
+    "arithmetic": { "type": "object" },
+    "classifications": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["EXACT_ZD_PAIR", "NONZERO_PRODUCT", "INVALID_ZERO_OPERAND", "ARITHMETIC_ERROR"]
+      }
+    },
+    "error_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string" }
+    },
+    "receipt": { "type": "object" },
+    "future_rtl_target": { "type": "object" }
+  }
+}
