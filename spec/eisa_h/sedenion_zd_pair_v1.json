@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "contract_id": "eisa_h.sedenion_zd_pair.v1",
+  "format": {
+    "algebra": "cayley-dickson-sedenion",
+    "dimension": 16,
+    "basis_order": "e0..e15",
+    "ordered_operands": true
+  },
+  "basis_table": {
+    "rule": "recursive-cayley-dickson-v1",
+    "encoding": "row-major-int8-signs",
+    "sha256": "e2b59d42ab7d44ead7f085e9e9b34df2ba1667445b0c89eff79cd8d921faa19d"
+  },
+  "operand_domain": {
+    "coefficient_type": "signed-integer",
+    "allowed_nonzero_values": [-1, 1],
+    "maximum_nonzero_coefficients_per_operand": 2,
+    "overflow_risk_abs_coefficient_threshold": 1518500249
+  },
+  "arithmetic": {
+    "accumulator": "exact-signed-i64",
+    "zero_predicate": "all-16-product-coefficients-exactly-zero",
+    "near_zero_semantics": "outside-v1",
+    "basis_product": "e_i * e_j = sign(i,j) * e_(i xor j)"
+  },
+  "classifications": [
+    "EXACT_ZD_PAIR",
+    "NONZERO_PRODUCT",
+    "INVALID_ZERO_OPERAND",
+    "ARITHMETIC_ERROR"
+  ],
+  "error_codes": [
+    "INVALID_OPERAND_SHAPE",
+    "UNSUPPORTED_COEFFICIENT_DOMAIN",
+    "TOO_MANY_NONZERO_COEFFICIENTS",
+    "OVERFLOW_RISK"
+  ],
+  "receipt": {
+    "execution_surface": "software_oracle",
+    "hardware_cycles": null,
+    "required_identity_fields": [
+      "schema_sha256",
+      "contract_sha256",
+      "vectors_sha256",
+      "basis_table_sha256",
+      "input_sha256"
+    ]
+  },
+  "future_rtl_target": {
+    "status": "not-implemented",
+    "candidate_architecture": "iterative-256-basis-product-mac",
+    "candidate_mac_cycles": 256,
+    "claim": "design-target-only"
+  }
+}
