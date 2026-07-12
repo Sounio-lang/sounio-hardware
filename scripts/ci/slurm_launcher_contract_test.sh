@@ -108,7 +108,7 @@ chmod +x "$TMP/mock-srun"
 cp -a "$ROOT" "$TMP/repo"
 git -C "$TMP/repo" add -A
 git -C "$TMP/repo" -c user.name=contract-test -c user.email=contract@example.invalid \
-  commit -qm "contract fixture"
+  commit --allow-empty -qm "contract fixture"
 launcher_pass="$TMP/new-parent/nested/launcher-pass"
 env SRUN_BIN="$TMP/mock-srun" OUT_DIR="$launcher_pass" \
   "$TMP/repo/scripts/slurm/run_zd_pair_synth.sh" > "$TMP/launcher-pass.out"
