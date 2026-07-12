@@ -16,12 +16,31 @@ jobs:
       - name: Verify ordered sedenion zero-divisor contract
         run: bash scripts/gate_zd_pair_contract.sh
 
-  eisa-h-zd-rtl:
+  eisa-h-zd-rtl-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - name: Install Icarus Verilog
         run: sudo apt-get update -qq && sudo apt-get install -y -qq iverilog
-      - name: Simulate iterative ordered sedenion zero-divisor core
-        run: bash scripts/gate_zd_pair_rtl.sh
+      - name: Validate RTL encoding without exhaustive simulation
+        run: |
+          python3 tools/eisa_h/check_basis_rom.py .
+          iverilog -g2012 -Wall -tnull -s eisa_h_sed16_zd_pair_v1 rtl/eisa_h_sed16_zd_pair_v1.sv
+
+  eisa-h-zd-synthesis-contract:
+    needs: [eisa-h-zd-contract, eisa-h-zd-rtl-contract]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dispatch packaging tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends iverilog yosys
+      - name: Validate synthesis dispatch surface
+        run: |
+          bash -n scripts/gate_zd_pair_synth.sh
+          bash -n scripts/slurm/run_zd_pair_synth.sh
+          bash -n scripts/ci/slurm_launcher_contract_test.sh
+          python3 -m py_compile tools/eisa_h/check_basis_rom.py tools/eisa_h/validate_synth_receipt.py tools/eisa_h/validate_slurm_result.py
+          python3 tools/eisa_h/check_basis_rom.py .
+          bash scripts/ci/slurm_launcher_contract_test.sh

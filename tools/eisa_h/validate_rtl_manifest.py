@@ -33,6 +33,7 @@ def main() -> int:
         "semantic_contract_id": "eisa_h.sedenion_zd_pair.v1",
         "semantic_contract_sha256": sha256(contract_path),
         "module": "eisa_h_sed16_zd_pair_v1",
+        "interface": "packed-16x64-coefficient-buses",
         "datapath": {
             "architecture": "iterative-single-mac",
             "basis_products": 256,

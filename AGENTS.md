@@ -15,6 +15,9 @@ This repository is the hardware evidence surface for Sounio and EISA.
   silicon receipts.
 - Every semantic change requires adversarial vectors and deterministic replay.
 - Keep commits small and do not mix contract changes with RTL optimization.
+- Keep editing, review, and narrow smoke checks interactive. Run exhaustive RTL,
+  double synthesis, formal, and GPU workloads through Slurm; retain the job ID,
+  node, source commit, logs, and artifact hashes in the receipt.
 
 ## Initial boundary
 

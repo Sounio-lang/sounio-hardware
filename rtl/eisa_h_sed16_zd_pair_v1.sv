@@ -4,15 +4,15 @@ module eisa_h_sed16_zd_pair_v1 (
     input  logic                    clk,
     input  logic                    rst_n,
     input  logic                    start,
-    input  logic signed [63:0]      lhs [0:15],
-    input  logic signed [63:0]      rhs [0:15],
+    input  logic signed [1023:0]    lhs_flat,
+    input  logic signed [1023:0]    rhs_flat,
     output logic                    ready,
     output logic                    busy,
     output logic                    done,
     output logic [1:0]              classification,
     output logic [2:0]              error_code,
     output logic                    product_is_zero,
-    output logic signed [63:0]      product [0:15],
+    output logic signed [1023:0]    product_flat,
     output logic [8:0]              mac_cycles
 );
     localparam logic [1:0] CLASS_EXACT_ZD_PAIR       = 2'd0;
@@ -28,6 +28,9 @@ module eisa_h_sed16_zd_pair_v1 (
     logic signed [63:0] lhs_latched [0:15];
     logic signed [63:0] rhs_latched [0:15];
     logic signed [63:0] accumulator [0:15];
+    logic signed [63:0] lhs [0:15];
+    logic signed [63:0] rhs [0:15];
+    logic signed [63:0] product [0:15];
     logic [3:0] i_index;
     logic [3:0] j_index;
     logic finalize;
@@ -41,40 +44,17 @@ module eisa_h_sed16_zd_pair_v1 (
     integer rhs_nonzero_count;
     integer comb_k;
     integer seq_k;
+    genvar lane;
+    localparam logic [255:0] V1_BASIS_NEGATIVE =
+        256'hcd4c6726ab8af1e05b523d38979401feccb266d8aa74f01e5aac3cc6966a0000;
 
-    function automatic integer cd_sigma;
-        input integer a;
-        input integer b;
-        input integer bits;
-        integer half;
-        integer a_hi;
-        integer b_hi;
-        integer a_lo;
-        integer b_lo;
-        begin
-            if ((a == 0) || (b == 0)) begin
-                cd_sigma = 1;
-            end else if (bits <= 1) begin
-                cd_sigma = -1;
-            end else begin
-                half = 1 << (bits - 1);
-                a_hi = (a >= half);
-                b_hi = (b >= half);
-                a_lo = a % half;
-                b_lo = b % half;
-                if ((a_hi == 0) && (b_hi == 0))
-                    cd_sigma = cd_sigma(a_lo, b_lo, bits - 1);
-                else if ((a_hi == 0) && (b_hi == 1))
-                    cd_sigma = cd_sigma(b_lo, a_lo, bits - 1);
-                else if ((a_hi == 1) && (b_hi == 0))
-                    cd_sigma = (b_lo == 0) ? cd_sigma(a_lo, 0, bits - 1)
-                                           : -cd_sigma(a_lo, b_lo, bits - 1);
-                else
-                    cd_sigma = (b_lo == 0) ? -cd_sigma(0, a_lo, bits - 1)
-                                           : cd_sigma(b_lo, a_lo, bits - 1);
-            end
+    generate
+        for (lane = 0; lane < 16; lane = lane + 1) begin : lane_wiring
+            assign lhs[lane] = lhs_flat[(lane * 64) +: 64];
+            assign rhs[lane] = rhs_flat[(lane * 64) +: 64];
+            assign product_flat[(lane * 64) +: 64] = product[lane];
         end
-    endfunction
+    endgenerate
 
     function automatic signed [63:0] basis_term;
         input signed [63:0] left;
@@ -84,7 +64,7 @@ module eisa_h_sed16_zd_pair_v1 (
         reg signed [63:0] raw;
         begin
             raw = left * right;
-            basis_term = (cd_sigma(a, b, 4) < 0) ? -raw : raw;
+            basis_term = V1_BASIS_NEGATIVE[{a, b}] ? -raw : raw;
         end
     endfunction
 

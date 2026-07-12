@@ -40,3 +40,39 @@
 - Evidence boundary: RTL simulation only. No synthesis, formal, FPGA, ASIC,
   timing, power, area, or silicon claim.
 - Raw local result: `/tmp/llm-offload-gpnQJn/` (ephemeral).
+
+## 2026-07-12 - EISA-H ZD-pair generic synthesis v1
+
+- Target: `tools/eisa_h/check_basis_rom.py`
+- Task: `math-review`
+- Provider: xAI/Grok 4.3
+- Outcome: NO MATHEMATICAL CONTENT TO REVIEW
+- Classification: the provider treated the ROM/hash binding as executable
+  verification rather than a separate derivation. This is recorded, not PASS.
+- Orthogonal technical review: internal adversarial review examined ABI,
+  toolchain identity, pass recipe, gate composition, determinism wording, and
+  failure classification; all findings were repaired before commit.
+- Evidence boundary: generic synthesis only; no post-synthesis equivalence,
+  technology mapping, timing, power, physical area, FPGA, ASIC, or silicon.
+- Raw local result: `/tmp/llm-offload-um7hOq/` (ephemeral).
+
+## 2026-07-12 - EISA-H synthesis and Slurm dispatch review
+
+- Target: synthesis commit range `07d1319..09737f6` plus the Slurm dispatch
+  delta
+- Task: adversarial code and evidence review
+- Provider: Gemini 3.1 Pro
+- Initial outcome: `READY_WITH_FIXES`
+- Findings: `grep -c` could terminate the gate under `set -e`, and manifest
+  mutation used brittle textual substitution.
+- Resolution: repaired both findings; focused Gemini re-review returned
+  `READY` with both findings closed and all five bounded claims supported.
+- Degraded lenses: MiniMax `TIMEOUT`; Z.AI `TIMEOUT`; Kimi `BLOCKED` by depleted
+  provider credit after an initial permission rejection. None is counted as a
+  review pass or consensus.
+- Independent launcher review: `NOT_READY` before repair, with eight dispatch
+  findings covering SHA identity, collision safety, toolchain closure, CI
+  routing, fixture coverage, stderr retention, blocked classification, and
+  scheduler metadata validation. All were addressed before Slurm execution.
+- Raw local results: `/tmp/sounio-review-gemini.log` and
+  `/tmp/sounio-rereview-gemini.log` (ephemeral).
