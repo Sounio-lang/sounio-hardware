@@ -125,3 +125,35 @@
 - Raw local results: `/tmp/llm-offload-CdglbS/`,
   `/tmp/llm-offload-5xT9IB/`, `/tmp/llm-offload-m4EJke/`, and
   `/tmp/llm-offload-EP14cm/` (ephemeral).
+
+## 2026-07-13 - EISA-H exact-relation miter geometry repair
+
+- Targets: closure-support selection and structural proof, reset/state miter
+  geometry guards, exact-relation CNF identities, schema-v3 receipt, and
+  corrected external review prose.
+- Internal adversarial review found that Yosys 0.33 expanded the documented
+  5,147-cell target into a 5,179-cell miter dependency cone. The additional 32
+  cells are the high halves of `lhs_nonzero_count` and `rhs_nonzero_count`.
+  Solver scouting was stopped before using the old CNF.
+- Repair: all 32 support cells are explicitly selected and proved before miter
+  construction; their pre-proof and post-proof structural maps are pinned.
+  Both miters now require 5,179 total `$equiv` cells decomposed into 32 proven
+  support cells plus 5,147 unproven relation cells. The state trigger exposes
+  exactly 5,147 pinned `cmp_*` outputs.
+- Mandatory xAI math-review returned `NO MATHEMATICAL CONTENT TO REVIEW` after
+  confirming the set-cardinality arithmetic. The subsequent xAI adversarial
+  review correctly required independent replay for the new reset CNF and
+  stronger support-cell evidence. The receipt retains certificate status as
+  pending, and the gate now pins the 32-cell structural `A == B` map plus both
+  miter decompositions. Its validator-staleness finding was also repaired.
+- External-facing fan-out: xAI found the final receipt internally consistent
+  and confirmed the exact 5,179-dependency/5,147-relation distinction.
+  DeepSeek returned `Insufficient Balance`; Gemini returned OpenRouter HTTP
+  402 insufficient credits. Neither provider failure is counted as a pass.
+- Current exact CNFs: reset
+  `ba2a9b0c064855380f4b81d729574f48dee62b16cc02c99f506da33d9d8b4eeb`
+  is Yosys UNSAT with external certificate pending; state step
+  `0b5ccf1c1a025ff3fdbc5c4a0a1354d77995b2cd130d41672bceadbf28ac0a8d`
+  is emitted with solver not yet run. Full equivalence remains unclaimed.
+- Raw local results: `/tmp/llm-offload-raXVx3/`,
+  `/tmp/llm-offload-7ZuEmH/`, and `/tmp/llm-offload-u0HC1J/` (ephemeral).
