@@ -1,0 +1,6 @@
+script scripts/yosys/formal_zd_pair_surface_v1.ys
+equiv_miter -assert -undef relation_reset_miter @proof_equiv
+select -clear
+hierarchy -check -top relation_reset_miter
+proc
+opt_clean

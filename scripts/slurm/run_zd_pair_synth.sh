@@ -215,12 +215,17 @@ printf "%s\n" \
   "iverilog_version=$(iverilog -V 2>&1 | sed -n "1p")" \
   > "$ROOT/result/worker_meta.txt"
 cd "$ROOT/repo"
+if [[ "$gate_id" == "formal" ]]; then
+  export EISA_H_FORMAL_ARTIFACT_DIR="$ROOT/result/formal_artifacts"
+fi
 set +e
 bash "$gate_script" > "$ROOT/result/gate.log" 2>&1
 rc=$?
 set -e
 printf "%s\n" "$rc" > "$ROOT/result/gate.rc"
-(cd "$ROOT/result" && sha256sum request.txt worker_meta.txt gate.log gate.rc > SHA256SUMS)
+(cd "$ROOT/result" && \
+  find . -type f ! -path ./SHA256SUMS -print0 | LC_ALL=C sort -z | \
+  xargs -0 sha256sum | sed "s#  \\./#  #" > SHA256SUMS)
 tar -C "$ROOT/result" -czf "$ROOT/result.tgz" .
 printf "__SOUNIO_SLURM_RESULT__"
 base64 -w0 "$ROOT/result.tgz"

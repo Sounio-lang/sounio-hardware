@@ -9,6 +9,7 @@ import pathlib
 import re
 
 REQUIRED_FILES = {"request.txt", "worker_meta.txt", "gate.log", "gate.rc"}
+ARTIFACT_PREFIX = "formal_artifacts/"
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 GATES = {
@@ -48,18 +49,53 @@ def validate_checksums(root: pathlib.Path) -> None:
         raise ValueError("missing SHA256SUMS")
     observed_files: set[str] = set()
     for line in manifest.read_text(encoding="utf-8").splitlines():
-        match = re.fullmatch(r"([0-9a-f]{64})  ([A-Za-z0-9_.-]+)", line)
+        match = re.fullmatch(r"([0-9a-f]{64})  ([A-Za-z0-9_./-]+)", line)
         if match is None:
             raise ValueError(f"malformed checksum line: {line!r}")
         expected, name = match.groups()
-        if name in observed_files or name not in REQUIRED_FILES:
+        relative = pathlib.PurePosixPath(name)
+        allowed_artifact = name.startswith(ARTIFACT_PREFIX)
+        if (
+            name in observed_files
+            or relative.is_absolute()
+            or ".." in relative.parts
+            or (name not in REQUIRED_FILES and not allowed_artifact)
+        ):
             raise ValueError(f"unexpected or duplicate checksum target: {name}")
         path = root / name
-        if not path.is_file() or sha256(path) != expected:
+        try:
+            resolved = path.resolve(strict=True)
+        except OSError as error:
+            raise ValueError(f"missing checksum target: {name}") from error
+        if (
+            path.is_symlink()
+            or root not in resolved.parents
+            or not resolved.is_file()
+            or sha256(resolved) != expected
+        ):
             raise ValueError(f"checksum mismatch: {name}")
         observed_files.add(name)
-    if observed_files != REQUIRED_FILES:
-        raise ValueError(f"checksum coverage mismatch: {sorted(observed_files)}")
+    missing = REQUIRED_FILES - observed_files
+    if missing:
+        raise ValueError(f"checksum coverage mismatch: missing={sorted(missing)}")
+    artifact_root = root / ARTIFACT_PREFIX.rstrip("/")
+    actual_artifacts = (
+        {
+            path.relative_to(root).as_posix()
+            for path in artifact_root.rglob("*")
+            if path.is_file() or path.is_symlink()
+        }
+        if artifact_root.exists()
+        else set()
+    )
+    listed_artifacts = {
+        name for name in observed_files if name.startswith(ARTIFACT_PREFIX)
+    }
+    if listed_artifacts != actual_artifacts:
+        raise ValueError(
+            "artifact checksum coverage mismatch: "
+            f"listed={sorted(listed_artifacts)} actual={sorted(actual_artifacts)}"
+        )
 
 
 def main() -> int:

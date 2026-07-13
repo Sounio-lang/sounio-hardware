@@ -52,6 +52,35 @@ make_fixture "$TMP/formal-pass" 0 "$COMMIT" formal
 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/formal-pass" \
   --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal >/dev/null
 
+cp -a "$TMP/formal-pass" "$TMP/formal-artifacts-pass"
+mkdir -p "$TMP/formal-artifacts-pass/formal_artifacts/reset_base"
+printf 'bounded proof artifact\n' > \
+  "$TMP/formal-artifacts-pass/formal_artifacts/reset_base/yosys.log"
+(cd "$TMP/formal-artifacts-pass" && \
+  find . -type f ! -name SHA256SUMS -print0 | LC_ALL=C sort -z | \
+  xargs -0 sha256sum | sed 's#  \./#  #' > SHA256SUMS)
+python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/formal-artifacts-pass" \
+  --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal >/dev/null
+
+cp -a "$TMP/formal-pass" "$TMP/formal-artifact-unlisted"
+mkdir -p "$TMP/formal-artifact-unlisted/formal_artifacts/reset_base"
+printf 'unlisted\n' > "$TMP/formal-artifact-unlisted/formal_artifacts/reset_base/yosys.log"
+expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" \
+  "$TMP/formal-artifact-unlisted" --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal
+
+cp -a "$TMP/formal-pass" "$TMP/formal-artifact-symlink"
+mkdir -p "$TMP/formal-artifact-symlink/formal_artifacts/reset_base"
+ln -s /etc/hosts "$TMP/formal-artifact-symlink/formal_artifacts/reset_base/yosys.log"
+(cd "$TMP/formal-artifact-symlink" && \
+  find . -type f -o -type l | LC_ALL=C sort | xargs sha256sum | \
+  sed 's#  \./#  #' > SHA256SUMS)
+expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" \
+  "$TMP/formal-artifact-symlink" --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal
+
+printf 'tampered\n' >> "$TMP/formal-artifacts-pass/formal_artifacts/reset_base/yosys.log"
+expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" \
+  "$TMP/formal-artifacts-pass" --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal
+
 make_fixture "$TMP/blocked" 42
 expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/blocked" \
   --expected-commit "$COMMIT" --srun-rc 42 --gate-id synthesis
@@ -153,4 +182,4 @@ expect_rc 42 env SRUN_BIN="$TMP/mock-srun" MOCK_SRUN_MODE=missing \
 grep -F "mock scheduler rejected payload" "$TMP/launcher-missing/srun.err" >/dev/null
 [[ "$(git -C "$ROOT" rev-parse HEAD)" == "$ORIGINAL_HEAD" ]]
 
-echo "SLURM_LAUNCHER_CONTRACT_PASS cases=13"
+echo "SLURM_LAUNCHER_CONTRACT_PASS cases=17"
