@@ -2,7 +2,7 @@
 
 Date: 2026-07-13
 
-Status: **GEOMETRY VALIDATED, CERTIFICATES ABSENT**.
+Status: **CONTROL CERTIFIED, THREE PARTITIONS PENDING**.
 
 The monolithic exact state-step CNF timed out under two 600-second CaDiCaL
 strategies. This design divides only its next-step consequent while retaining
@@ -37,6 +37,21 @@ replay.
 The decomposition does not establish state-step closure by itself. Aggregate
 promotion remains blocked until every partition has a replayed UNSAT
 certificate, or the monolithic exact CNF obtains one directly.
+
+The 27-bit control partition is the first certified sub-obligation. CaDiCaL
+1.7.3 returned UNSAT for CNF `f035d87612a0be2c198674d6edc8a52640b1d916d3d13a171136646e6fefd839`
+in Slurm job 5825 and produced a 152,493,236-byte binary DRAT proof. `drat-trim`
+verified it in that run and independently replayed the same CNF, proof, and
+checker identities on a different node in job 5826. Job 5827 then reemitted
+the CNF through the committed partition-emission gate at source
+`cd340b0843f0ced9fbb7886f0c8ac1c2a35ce45c`; the decompressed output was bit
+identical. The aggregate status is therefore exactly one of four certified,
+not state-step closure.
+
+The monolithic exact CNF remained UNKNOWN after a 7,200-second `--unsat` run
+in job 5823. Its 4,278,340,897-byte partial DRAT stream was not retained and
+was not checked, so it carries no certificate claim. This result motivates the
+partitioned path but does not count as evidence for or against equivalence.
 
 The durable emission path runs through
 `scripts/slurm/run_zd_pair_formal_partition_emit.sh`. It transports the pinned

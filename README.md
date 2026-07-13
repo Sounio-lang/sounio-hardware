@@ -55,6 +55,10 @@ unclaimed until every partition CNF has an independently replayed certificate.
 The Slurm partition-emission launcher generates all four CNFs through the
 hash-bound temporal drivers, validates their DIMACS structure, and returns a
 complete checksummed bundle. Emission is not an UNSAT result.
+The 27-bit control partition now has a CaDiCaL UNSAT proof, an independent
+`drat-trim` replay on a second Slurm node, and a bit-identical reemission through
+the audited gate. The other three partition certificates remain pending, so
+full state-step equivalence remains unclaimed.
 
 ## Ownership
 

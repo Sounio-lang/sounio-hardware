@@ -220,3 +220,25 @@
   manifests created only after every child exited.
 - Claim boundary: emission remains distinct from UNSAT certification.
 - Raw local result: `/tmp/llm-offload-QA7mxI/` (ephemeral).
+
+## 2026-07-13 - EISA-H control partition certificate promotion
+
+- Targets: schema-v6 formal receipt, state-step partition review, and README
+  claim language after Slurm jobs 5823, 5825, 5826, and 5827.
+- Evidence boundary: the 27-bit control consequent is certified UNSAT and
+  independently replayed. The other three consequents remain pending, so
+  aggregate state-step closure and formal equivalence remain unclaimed.
+- Identity bridge: job 5827 reemitted the control CNF through committed source
+  `cd340b0843f0ced9fbb7886f0c8ac1c2a35ce45c`; its raw CNF, recipe, and temporal
+  driver are bit-identical to the objects used by jobs 5825 and 5826.
+- Monolithic boundary: job 5823 returned UNKNOWN after 7,200 seconds. Its
+  partial proof was not retained or checked and is not treated as evidence for
+  or against equivalence.
+- Mandatory xAI math-review returned `NO MATHEMATICAL CONTENT TO REVIEW`.
+  External-facing xAI review returned `READY`; DeepSeek and Gemini returned
+  provider errors and are not counted as reviews or consensus.
+- Final internal read-only review returned `READY`: control remains exactly
+  one of four, the cross-commit CNF identity bridge is intact, and the
+  monolithic timeout remains UNKNOWN with no certificate.
+- Raw local results: `/tmp/llm-offload-QbR9Kd/` and
+  `/tmp/llm-offload-lENUTW/` (ephemeral).

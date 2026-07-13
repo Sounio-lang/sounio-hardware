@@ -243,7 +243,7 @@ def validate_partition_semantics(root: pathlib.Path) -> None:
     pinned_partitioning = formal_contract["surface"]["state_step_partitioning"]
     pinned_partitions = pinned_partitioning["partitions"]
     if (
-        formal_contract["schema_version"] != 5
+        formal_contract["schema_version"] != 6
         or pinned_partitioning["partition_count"] != 4
         or pinned_partitioning["consequent_union_bits"] != 5147
         or set(pinned_partitions) != set(PARTITIONS)
