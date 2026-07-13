@@ -66,7 +66,9 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends yosys
       - name: Validate exact state-step partition geometry
         run: |
+          bash -n scripts/gate_zd_pair_formal_partition_emit.sh
           bash -n scripts/gate_zd_pair_formal_partition_surface.sh
+          bash -n scripts/slurm/run_zd_pair_formal_partition_emit.sh
           python3 -m py_compile tools/eisa_h/generate_state_partition_recipes.py tools/eisa_h/validate_formal_receipt.py
           python3 tools/eisa_h/validate_formal_receipt.py . --contract-only
           bash scripts/gate_zd_pair_formal_partition_surface.sh

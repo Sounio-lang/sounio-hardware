@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 6,
   "formal_id": "eisa_h.sedenion_zd_pair.formal.v1",
   "rtl_implementation_id": "eisa_h.sedenion_zd_pair.rtl.v1",
   "source_rtl_sha256": "90fc920d02eb9719fec3d63835e460bad8ce5636fc94002ff4620958b5b27157",
@@ -8,7 +8,9 @@
     "reset_base_sha256": "ed8f392741568b58018bbf9e8e7af8fdb677be124a57fb587a5e1731e1575905",
     "state_step_sha256": "ee6464ff452f90688976a03c750007645c8bc5f241f6cb166c716e565b0c4dc8",
     "partition_generator_sha256": "a33dd4b086ddcadc22eec8a80b75b39f897942689979372e83c104be0b90689a",
-    "partition_surface_gate_sha256": "bfdb04b726afa948b5ef49371d47c24453ddbb29cc6f77368524c56819747251"
+    "partition_surface_gate_sha256": "bfdb04b726afa948b5ef49371d47c24453ddbb29cc6f77368524c56819747251",
+    "partition_emit_gate_sha256": "8f43543c1534797e6fa6d4e060e34dc2f7d6301bbd4487bb13097c7c5ee1fc9e",
+    "partition_slurm_wrapper_sha256": "ab20f212675d90b35e2f1ddee59d7472cd54eb5ba7f28f8d0303d83ad354c030"
   },
   "post_synthesis_manifest_sha256": "ad5d0d825d8a4c6607d9f07cf056a5e7137a9f00605959f12dc3dfda250220c9",
   "tool": {
@@ -59,7 +61,7 @@
     "state_step_cmp_bits": 5147,
     "state_step_cmp_map_sha256": "855df0a4439e4840a21dac7843f8d07ca974026cf67e742561cd38e883f7ef35",
     "state_step_partitioning": {
-      "status": "GEOMETRY_VALIDATED_RECIPES_GENERATED",
+      "status": "CONTROL_CERTIFIED_REMAINING_THREE_PENDING",
       "logical_form": "for every X, UNSAT(T and P5147(t) and not P_X(t+1))",
       "antecedent_bits_per_obligation": 5147,
       "consequent_union_bits": 5147,
@@ -100,7 +102,49 @@
           "assert_bits": 27,
           "cmp_map_sha256": "d0f0885a182150eed6d1f5544105a071469c8bf75560cabc6390c0227a2efa61",
           "recipe_sha256": "5502179a5fcff831954c2bb127767129453d09abe32bfc2a88a22fe8bf57bea8",
-          "temporal_driver_sha256": "e69acecc35d6042208842a89b183f77f8e71a8697735b61f98b1139fe0e453f2"
+          "temporal_driver_sha256": "e69acecc35d6042208842a89b183f77f8e71a8697735b61f98b1139fe0e453f2",
+          "certificate": {
+            "status": "CERTIFIED_UNSAT_INDEPENDENT_REPLAY",
+            "proof_source_commit": "3e50247182ae44f515d27c50e6eaa4f325e8997f",
+            "emission_source_commit": "cd340b0843f0ced9fbb7886f0c8ac1c2a35ce45c",
+            "partition_emit_gate_sha256": "8f43543c1534797e6fa6d4e060e34dc2f7d6301bbd4487bb13097c7c5ee1fc9e",
+            "cnf_variables": 3052442,
+            "cnf_clauses": 8276268,
+            "cnf_bytes": 340135181,
+            "cnf_sha256": "f035d87612a0be2c198674d6edc8a52640b1d916d3d13a171136646e6fefd839",
+            "cnf_reemission": "BIT_IDENTICAL",
+            "solver": "cadical-1.7.3",
+            "solver_binary_sha256": "7b73df0a6d9cf3c751a1948300e5baff8e82c4d39bcd88f0c063b5f5cfb8b33e",
+            "solver_rc": 20,
+            "solver_seconds": 40.13,
+            "solver_conflicts": 7497,
+            "solver_decisions": 513235,
+            "solver_propagations": 112447274,
+            "proof_format": "binary-drat",
+            "proof_bytes": 152493236,
+            "proof_sha256": "efe00f78ac5fa535f205a0e9a19d0940a02954e8317f8133ebbf5f25496fbc7a",
+            "checker": "drat-trim",
+            "checker_binary_sha256": "92f0aa9575ed519d66a99b8b1b3dde6ece4618ae4c202a3a4b200265dda0aa7a",
+            "primary_check": "VERIFIED",
+            "primary_check_seconds": 1537.668,
+            "resolution_steps": 21676849,
+            "primary_slurm_job_id": 5825,
+            "primary_slurm_node": "gpuorangefs-multi-r740-proxmox",
+            "independent_replay": "VERIFIED",
+            "replay_check_seconds": 888.659,
+            "replay_slurm_job_id": 5826,
+            "replay_slurm_node": "gpuorangefs-r770-proxmox",
+            "emission_slurm_job_id": 5827,
+            "emission_slurm_node": "gpuorangefs-multi-r740-proxmox",
+            "emission_bundle_sha256": "8373363727334e53486af362d2e60dc7280127ffee0c1b4fba091aee2eed6103",
+            "emission_return_manifest_sha256": "f105b60b693f1174c5e4e5b9d83eee0b021012035a1c8b26b1c0fd2fcfe31802",
+            "emission_bundle_manifest_sha256": "0a095433777577875fca7ab3e99a2fa420b6dc693a50a50c911d6414777cd230",
+            "emission_gate_log_sha256": "62ed22a3baff91794f511adcc6fba2919fdc2d3850d22afa87f8f74c8752a886",
+            "emission_artifact_manifest_sha256": "c6c6a19e02f856d02b130026b58dc691ad359cec602403848c64f2ba287c91fc",
+            "proof_bundle_sha256": "3886b2f932a1f9de5edaf3503ea7b1cd57e910bdf2e21c128059005dc8d2e254",
+            "replay_bundle_sha256": "4f14dffbab49b055c9b77ffcf06e6bdb0dc6aab3f85bedf25f61f9a955df9e66",
+            "certificate_artifact_manifest_sha256": "0d1c51439f98e6b7e8690090cd845ff6b2b08eb4f082ced034604c783045929f"
+          }
         }
       },
       "certificate_binding": [
@@ -108,13 +152,14 @@
         "partition_cmp_map_sha256",
         "generated_recipe_sha256",
         "temporal_driver_sha256",
+        "partition_emit_gate_sha256",
         "cnf_sha256",
         "solver_binary_sha256",
         "proof_sha256",
         "checker_binary_sha256",
         "independent_replay"
       ],
-      "aggregate_certificate_status": "NONE"
+      "aggregate_certificate_status": "PARTIAL_1_OF_4_CERTIFIED_UNSAT"
     }
   },
   "obligations": {
@@ -147,7 +192,7 @@
       "consequent": "the same exact relation holds at step t+1",
       "undef_modeling": false,
       "evidence": {
-        "status": "SCOUT_TIMEOUT_LONG_RUN_PENDING",
+        "status": "MONOLITHIC_LONG_RUN_TIMEOUT_PARTITION_PROOFS_IN_PROGRESS",
         "cnf_variables": 3052420,
         "cnf_clauses": 8276177,
         "cnf_bytes": 340131200,
@@ -174,6 +219,25 @@
             "partial_proof_bytes": 63697365,
             "partial_proof_retained": false
           }
+        },
+        "long_run": {
+          "slurm_job_id": 5823,
+          "slurm_node": "gpuorangefs-multi-r740-proxmox",
+          "source_commit": "32adf8127e994467c6a8d3b32b9b1371f80433f2",
+          "mode": "--unsat",
+          "timeout_seconds": 7200,
+          "elapsed_seconds": 7200.134,
+          "result": "UNKNOWN",
+          "conflicts": 15444951,
+          "decisions": 193569638,
+          "propagations": 9564285868,
+          "peak_rss_mb": 1561.67,
+          "partial_proof_bytes": 4278340897,
+          "partial_proof_sha256": "e83389896929739e3efcf8ed34b1d1c927ccb2a4f592436dcd8d7ccfe9f5f0d0",
+          "partial_proof_retained": false,
+          "checker_status": "NOT_RUN",
+          "artifact_bundle_sha256": "ae7e6bbf43309ee50550c8e833fcb503333233b3ef02dda80eb714cc9977cf0d",
+          "artifact_manifest_sha256": "a2971031deb91e12d45028340da5423aeee4f6d1531ac7bcca566f37ee4c955d"
         },
         "proof_sha256": null,
         "certificate_status": "NONE"
@@ -208,14 +272,14 @@
     "slurm_node": "gpuorangefs-multi-r740-proxmox"
   },
   "reference_evidence": {
-    "status": "EXACT_RESET_CERTIFIED_STATE_STEP_PENDING",
+    "status": "EXACT_RESET_AND_CONTROL_PARTITION_CERTIFIED_STATE_STEP_PENDING",
     "reset_base_independent_replay": "VERIFIED_COMPUTE_AND_WORKSPACE",
-    "state_step_independent_replay": "NOT_CERTIFIED_CURRENT_CNF"
+    "state_step_independent_replay": "CONTROL_PARTITION_VERIFIED_REMAINING_THREE_NOT_CERTIFIED"
   },
   "claim": {
     "formal_equivalence": "NOT_CLAIMED",
     "reset_base": "CERTIFIED_UNSAT",
-    "state_step": "EXACT_CNF_SCOUT_TIMEOUT_LONG_RUN_PENDING",
+    "state_step": "CONTROL_PARTITION_CERTIFIED_MONOLITHIC_TIMEOUT_REMAINING_THREE_PENDING",
     "arbitrary_initial_state_equivalence": "NOT_CLAIMED",
     "timing": "NOT_CLAIMED",
     "silicon": "NOT_CLAIMED"

@@ -151,12 +151,16 @@ artifact capture.
 ## Claim boundary
 
 Established: the 32 automatic cutpoints are proved, the repaired trigger is
-exactly the pinned 5,147-bit relation, both exact CNFs are deterministically
-emitted, and the current exact reset-base CNF is independently certified
-UNSAT.
+exactly the pinned 5,147-bit relation, both monolithic exact CNFs are
+deterministically emitted, and the current exact reset-base CNF is
+independently certified UNSAT. The 27-bit control consequent partition is also
+independently certified UNSAT; its CNF was reemitted bit-identically through
+the audited partition gate.
 
-Not yet independently certified: the exact state-step CNF or any of its four
-exact consequent partitions. Consequently,
+Not yet independently certified: the monolithic exact state-step CNF and the
+latches, accumulator, and product-and-alias consequent partitions. The control
+certificate is exactly one of four and does not establish aggregate closure.
+Consequently,
 temporal source-to-synthesized equivalence, arbitrary-initial-state
 equivalence, timing equivalence, and silicon equivalence remain unclaimed.
 

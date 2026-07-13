@@ -193,3 +193,56 @@
   consensus.
 - Raw local results: `/tmp/llm-offload-rjc9Od/` and
   `/tmp/llm-offload-EaWas3/` (ephemeral).
+
+## 2026-07-13 - EISA-H partition CNF emission transport
+
+- Targets: partition emission gate, Slurm wrapper/routing, returned artifact
+  validation, and launcher contract fixtures.
+- Adversarial xAI review raised two relevant evidence-integrity requirements:
+  prove that the complete CNF dump precedes a bounded internal-solver timeout,
+  and reject semantically incomplete or internally inconsistent returned
+  bundles even when their outer transport checksum is self-consistent.
+- Resolution: every Yosys log must contain exactly one complete dump marker
+  before exactly one timeout-or-success outcome. The return validator requires
+  the exact 31-file artifact anatomy, rejects empty required files, and
+  independently verifies full coverage and every digest in the nested bundle
+  manifest. A read-only internal re-review then found and drove repairs for a
+  real marker/fixture mismatch, self-signed driver mutation, duplicate solver
+  outcomes, and unnormalized malformed gzip/JSON failures. Recipe and driver
+  identities are now pinned to the local schema-v5 formal contract. Negative
+  fixtures cover those cases plus a missing CNF, a missing bundle line, and
+  both top-level and nested digest mismatches; the launcher suite now passes
+  32 cases, including partial rc=1/42 returns, unexpected artifacts, semantic
+  manifest drift, and invalid or truncated gzip/DIMACS payloads.
+- Two other xAI findings were false positives against the actual diff: the
+  gate already rejected existing artifact directories before spawning work,
+  and all four writers already used distinct CNF, log, and artifact paths with
+  manifests created only after every child exited.
+- Claim boundary: emission remains distinct from UNSAT certification.
+- Raw local result: `/tmp/llm-offload-QA7mxI/` (ephemeral).
+
+## 2026-07-13 - EISA-H control partition certificate promotion
+
+- Targets: schema-v6 formal receipt, state-step partition review, and README
+  claim language after Slurm jobs 5823, 5825, 5826, and 5827.
+- Evidence boundary: the 27-bit control consequent is certified UNSAT and
+  independently replayed. The other three consequents remain pending, so
+  aggregate state-step closure and formal equivalence remain unclaimed.
+- Identity bridge: job 5827 reemitted the control CNF through committed source
+  `cd340b0843f0ced9fbb7886f0c8ac1c2a35ce45c`; its raw CNF, recipe, and temporal
+  driver are bit-identical to the objects used by jobs 5825 and 5826.
+- Monolithic boundary: job 5823 returned UNKNOWN after 7,200 seconds. Its
+  partial proof was not retained or checked and is not treated as evidence for
+  or against equivalence.
+- Mandatory xAI math-review returned `NO MATHEMATICAL CONTENT TO REVIEW`.
+  External-facing xAI review returned `READY`; DeepSeek and Gemini returned
+  provider errors and are not counted as reviews or consensus.
+- Final internal read-only review returned `READY`: control remains exactly
+  one of four, the cross-commit CNF identity bridge is intact, and the
+  monolithic timeout remains UNKNOWN with no certificate.
+- A follow-up xAI review returned `READY` on the corrected historical formal
+  review claim boundary: control is certified, while the monolithic obligation
+  and the other three partitions remain uncertified. DeepSeek and Gemini again
+  returned provider errors.
+- Raw local results: `/tmp/llm-offload-QbR9Kd/` and
+  `/tmp/llm-offload-lENUTW/`, and `/tmp/llm-offload-PqYT01/` (ephemeral).
