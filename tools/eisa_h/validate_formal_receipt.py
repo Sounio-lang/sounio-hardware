@@ -16,7 +16,7 @@ def sha256(path: pathlib.Path) -> str:
 
 def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "formal_id": "eisa_h.sedenion_zd_pair.formal.v1",
         "rtl_implementation_id": "eisa_h.sedenion_zd_pair.rtl.v1",
         "source_rtl_sha256": sha256(root / "rtl/eisa_h_sed16_zd_pair_v1.sv"),
@@ -29,6 +29,12 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
             ),
             "state_step_sha256": sha256(
                 root / "scripts/yosys/formal_zd_pair_step_v1.ys"
+            ),
+            "partition_generator_sha256": sha256(
+                root / "tools/eisa_h/generate_state_partition_recipes.py"
+            ),
+            "partition_surface_gate_sha256": sha256(
+                root / "scripts/gate_zd_pair_formal_partition_surface.sh"
             ),
         },
         "post_synthesis_manifest_sha256": sha256(
@@ -76,6 +82,64 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
             "miter_unproven_relation_cells": 5147,
             "state_step_cmp_bits": 5147,
             "state_step_cmp_map_sha256": "855df0a4439e4840a21dac7843f8d07ca974026cf67e742561cd38e883f7ef35",
+            "state_step_partitioning": {
+                "status": "GEOMETRY_VALIDATED_RECIPES_GENERATED",
+                "logical_form": "for every X, UNSAT(T and P5147(t) and not P_X(t+1))",
+                "antecedent_bits_per_obligation": 5147,
+                "consequent_union_bits": 5147,
+                "defined_domain": "arbitrary defined initial state and shared defined inputs",
+                "temporal_flags": [
+                    "-seq 2",
+                    "-set-at 1 trigger 0",
+                    "-set-def-inputs",
+                    "-set-init-def",
+                    "-prove-skip 1",
+                    "-prove-asserts",
+                ],
+                "reachability_assumption": False,
+                "operand_domain_assumption": False,
+                "partition_count": 4,
+                "pairwise_disjoint": True,
+                "exact_union": True,
+                "partitions": {
+                    "latches": {
+                        "assert_bits": 2048,
+                        "cmp_map_sha256": "54a3e6384fb662a56e08e0b0d899d94d2ad7bcfc6fd44cfee79f4933e7b6b9e3",
+                        "recipe_sha256": "1ee4f3418314cdb7518632f65ca2a6e5591332f2956dd6999f890692737bcbe4",
+                        "temporal_driver_sha256": "beaab6b0c3dbb645dbc5414b2212a86635d5eeec6a92575b25fdfde79d1c29a5",
+                    },
+                    "accumulator": {
+                        "assert_bits": 1024,
+                        "cmp_map_sha256": "0f3a495682f2ae93ef620ed30e229ad52239eccc06b244bc666a74b3c4c2d2b8",
+                        "recipe_sha256": "927ff5924cd28d508f0bc7ff87f5dffe6931974513e2f24a70bb26eb1b1e7819",
+                        "temporal_driver_sha256": "836d7c68b3a9312702ae3d813ddcd29c96043435bdd4f91f36d4ab525b8150e1",
+                    },
+                    "product_and_alias": {
+                        "assert_bits": 2048,
+                        "cmp_map_sha256": "7f4607dde489da1140c30ec205962baee8ba0441b6493237464d792cc6d94cf7",
+                        "recipe_sha256": "7f54f21de7683b4e226b081e934c8ec38a2ad6dfb805fbc5db623c79505e362a",
+                        "temporal_driver_sha256": "1f2c918dcb77e3f9648892eb7e59856f161970d744982be64ba6e573ccd97e8f",
+                    },
+                    "control": {
+                        "assert_bits": 27,
+                        "cmp_map_sha256": "d0f0885a182150eed6d1f5544105a071469c8bf75560cabc6390c0227a2efa61",
+                        "recipe_sha256": "5502179a5fcff831954c2bb127767129453d09abe32bfc2a88a22fe8bf57bea8",
+                        "temporal_driver_sha256": "e69acecc35d6042208842a89b183f77f8e71a8697735b61f98b1139fe0e453f2",
+                    },
+                },
+                "certificate_binding": [
+                    "full_cmp_map_sha256",
+                    "partition_cmp_map_sha256",
+                    "generated_recipe_sha256",
+                    "temporal_driver_sha256",
+                    "cnf_sha256",
+                    "solver_binary_sha256",
+                    "proof_sha256",
+                    "checker_binary_sha256",
+                    "independent_replay",
+                ],
+                "aggregate_certificate_status": "NONE",
+            },
         },
         "obligations": {
             "reset_base": {
@@ -107,15 +171,34 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
                 "consequent": "the same exact relation holds at step t+1",
                 "undef_modeling": False,
                 "evidence": {
-                    "status": "CNF_EMITTED_SOLVER_NOT_RUN",
+                    "status": "SCOUT_TIMEOUT_LONG_RUN_PENDING",
                     "cnf_variables": 3052420,
                     "cnf_clauses": 8276177,
                     "cnf_bytes": 340131200,
                     "cnf_sha256": "0b5ccf1c1a025ff3fdbc5c4a0a1354d77995b2cd130d41672bceadbf28ac0a8d",
                     "cmp_bits": 5147,
                     "cmp_map_sha256": "855df0a4439e4840a21dac7843f8d07ca974026cf67e742561cd38e883f7ef35",
-                    "solver": None,
-                    "result": "NOT_RUN",
+                    "solver": "cadical-1.7.3",
+                    "result": "UNKNOWN",
+                    "scout": {
+                        "slurm_job_id": 5822,
+                        "slurm_node": "gpuorangefs-multi-r740-proxmox",
+                        "timeout_seconds_per_lane": 600,
+                        "unsat_mode": {
+                            "result": "UNKNOWN",
+                            "conflicts": 2115544,
+                            "decisions": 68338245,
+                            "partial_proof_bytes": 769118281,
+                            "partial_proof_retained": False,
+                        },
+                        "plain_mode": {
+                            "result": "UNKNOWN",
+                            "conflicts": 24928,
+                            "decisions": 13112856,
+                            "partial_proof_bytes": 63697365,
+                            "partial_proof_retained": False,
+                        },
+                    },
                     "proof_sha256": None,
                     "certificate_status": "NONE",
                 },
@@ -151,12 +234,12 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
         "reference_evidence": {
             "status": "EXACT_RESET_CERTIFIED_STATE_STEP_PENDING",
             "reset_base_independent_replay": "VERIFIED_COMPUTE_AND_WORKSPACE",
-            "state_step_independent_replay": "NOT_RUN_CURRENT_CNF",
+            "state_step_independent_replay": "NOT_CERTIFIED_CURRENT_CNF",
         },
         "claim": {
             "formal_equivalence": "NOT_CLAIMED",
             "reset_base": "CERTIFIED_UNSAT",
-            "state_step": "EXACT_CNF_EMITTED_SOLVER_PENDING",
+            "state_step": "EXACT_CNF_SCOUT_TIMEOUT_LONG_RUN_PENDING",
             "arbitrary_initial_state_equivalence": "NOT_CLAIMED",
             "timing": "NOT_CLAIMED",
             "silicon": "NOT_CLAIMED",

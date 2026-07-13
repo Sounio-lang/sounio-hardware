@@ -163,3 +163,33 @@
   `/tmp/llm-offload-AOQtBt/` (ephemeral). The final xAI receipt review
   acknowledged the reset certificate and kept state-step promotion pending;
   DeepSeek and Gemini repeated the same balance/credit failures.
+
+## 2026-07-13 - EISA-H exact state-step consequent partitions
+
+- Targets: deterministic partition-recipe generator, partition surface gate,
+  schema-v4 formal receipt, and state-step partition review.
+- Mandatory math review: xAI/Grok 4.3 confirmed that four independently
+  certified obligations imply the monolithic one-step closure when every
+  obligation retains the full 5,147-bit antecedent and the four consequent
+  sets are an exact disjoint union.
+- Findings: generator geometry alone does not bind certificates to the recipe
+  actually executed; X/undef scope also had to be stated explicitly.
+- Resolution: the contract pins every partition and generated recipe hash and
+  requires certificate bundles to bind the full map, partition map, recipe,
+  temporal driver, CNF, solver/checker binaries, proof, and independent replay.
+  The domain is explicitly arbitrary defined state and inputs, with no
+  reachability or operand-domain assumption. No state-step equivalence claim
+  is promoted.
+- Internal diff review initially returned `NOT_READY`: the temporal SAT flags
+  were prose-only, CI did not execute the gate, generated recipes were not
+  interpreted, and persistence could self-hash a stale manifest. The repair
+  added pinned temporal drivers with flag-mutation checks, Yosys replay of all
+  four recipes, real CI execution, and empty-destination persistence with an
+  explicit checksum allowlist. The focused read-only re-review returned
+  `READY` with no remaining P1/P2 finding.
+- External-facing fan-out: xAI confirmed the written claim boundary and the
+  temporal encoding. DeepSeek returned an error from the provider and Gemini
+  returned an error from the provider; neither is counted as a review pass or
+  consensus.
+- Raw local results: `/tmp/llm-offload-rjc9Od/` and
+  `/tmp/llm-offload-EaWas3/` (ephemeral).
