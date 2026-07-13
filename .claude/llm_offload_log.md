@@ -240,5 +240,9 @@
 - Final internal read-only review returned `READY`: control remains exactly
   one of four, the cross-commit CNF identity bridge is intact, and the
   monolithic timeout remains UNKNOWN with no certificate.
+- A follow-up xAI review returned `READY` on the corrected historical formal
+  review claim boundary: control is certified, while the monolithic obligation
+  and the other three partitions remain uncertified. DeepSeek and Gemini again
+  returned provider errors.
 - Raw local results: `/tmp/llm-offload-QbR9Kd/` and
-  `/tmp/llm-offload-lENUTW/` (ephemeral).
+  `/tmp/llm-offload-lENUTW/`, and `/tmp/llm-offload-PqYT01/` (ephemeral).
