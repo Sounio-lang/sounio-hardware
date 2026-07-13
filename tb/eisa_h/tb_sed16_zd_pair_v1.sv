@@ -297,7 +297,7 @@ module tb_sed16_zd_pair_v1;
             $display("EISA_H_ZD_PAIR_RTL_FAIL failures=%0d cases=%0d", failures, case_count);
             $fatal(1);
         end
-        $display("EISA_H_ZD_PAIR_RTL_PASS rtl_cases=%0d contract_cases=9 adversarial_cases=6 basis_sign_combinations=%0d interface_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED", case_count, basis_count);
+        $display("EISA_H_ZD_PAIR_SIM_PASS completed_transactions=%0d aborted_by_reset_transactions=1 accepted_transactions=%0d fixed_v1_cases=%0d contract_cases=9 adversarial_cases=6 signed_basis_combinations=%0d interface_reset_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED", case_count + basis_count, case_count + basis_count + 1, case_count, basis_count);
         $finish;
     end
 endmodule

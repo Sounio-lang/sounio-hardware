@@ -18,15 +18,18 @@
     "rtl_representable_cases": 9,
     "adversarial_boundary_cases": 6,
     "basis_sign_combinations": 1024,
+    "completed_transactions": 1039,
+    "aborted_by_reset_transactions": 1,
+    "accepted_transactions": 1040,
     "handshake": "verified-in-simulation",
     "interface_rejected_cases": ["invalid-operand-shape"]
   },
   "artifacts": {
     "rtl_sha256": "90fc920d02eb9719fec3d63835e460bad8ce5636fc94002ff4620958b5b27157",
-    "testbench_sha256": "777b27d4b299164927a4c6357e8f891d9fb0a4802fe5bf5a44132315947e304d",
+    "testbench_sha256": "606ba99e2d0ae255d1c064538f29e306a28b6871697e7abd2251a0b77105b06b",
     "semantic_vectors_sha256": "10ca19a0d08c313793869bf8db30fb48d5a7df6107c92a5afabaa4be01e08a2d"
   },
-  "expected_simulation_receipt": "EISA_H_ZD_PAIR_RTL_PASS rtl_cases=15 contract_cases=9 adversarial_cases=6 basis_sign_combinations=1024 interface_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED",
+  "expected_simulation_receipt": "EISA_H_ZD_PAIR_SIM_PASS completed_transactions=1039 aborted_by_reset_transactions=1 accepted_transactions=1040 fixed_v1_cases=15 contract_cases=9 adversarial_cases=6 signed_basis_combinations=1024 interface_reset_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED",
   "claim": {
     "execution_surface": "rtl_simulation",
     "synthesis": "NOT_CLAIMED",

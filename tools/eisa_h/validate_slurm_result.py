@@ -93,8 +93,18 @@ def main() -> int:
     if gate_rc != 0:
         print(f"SLURM_SYNTH_FAIL rc={gate_rc} {common}")
         return gate_rc
-    if "\nEISA_H_ZD_PAIR_SYNTH_GATE_PASS\n" not in f"\n{gate_log}":
-        print("SLURM_SYNTH_BLOCKED reason=missing_synthesis_pass_marker")
+    required_markers = (
+        "EISA_H_ZD_PAIR_SYNTH_GATE_PASS",
+        "EISA_H_ZD_PAIR_POSTSYNTH_GATE_PASS",
+    )
+    missing_markers = [
+        marker for marker in required_markers if f"\n{marker}\n" not in f"\n{gate_log}"
+    ]
+    if missing_markers:
+        print(
+            "SLURM_SYNTH_BLOCKED reason=missing_gate_pass_marker "
+            f"markers={','.join(missing_markers)}"
+        )
         return 42
     print("EISA_H_ZD_PAIR_SLURM_PASS")
     print(common)

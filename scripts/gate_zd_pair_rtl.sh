@@ -21,7 +21,7 @@ iverilog -g2012 -Wall -s tb_sed16_zd_pair_v1 \
   -o "$TMP/tb_sed16_zd_pair_v1.vvp" \
   "$ROOT/rtl/eisa_h_sed16_zd_pair_v1.sv" \
   "$ROOT/tb/eisa_h/tb_sed16_zd_pair_v1.sv"
-EXPECTED_RECEIPT="EISA_H_ZD_PAIR_RTL_PASS rtl_cases=15 contract_cases=9 adversarial_cases=6 basis_sign_combinations=1024 interface_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED"
+EXPECTED_RECEIPT="EISA_H_ZD_PAIR_SIM_PASS completed_transactions=1039 aborted_by_reset_transactions=1 accepted_transactions=1040 fixed_v1_cases=15 contract_cases=9 adversarial_cases=6 signed_basis_combinations=1024 interface_reset_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED"
 vvp "$TMP/tb_sed16_zd_pair_v1.vvp" | tee "$TMP/rtl.log"
 grep -Fx "$EXPECTED_RECEIPT" "$TMP/rtl.log" >/dev/null
 vvp "$TMP/tb_sed16_zd_pair_v1.vvp" > "$TMP/rtl-replay.log"

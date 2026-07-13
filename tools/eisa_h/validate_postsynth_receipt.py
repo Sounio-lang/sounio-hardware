@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import pathlib
@@ -11,9 +12,10 @@ from typing import Any
 
 
 EXPECTED_SIMULATION_RECEIPT = (
-    "EISA_H_ZD_PAIR_RTL_PASS rtl_cases=15 contract_cases=9 adversarial_cases=6 "
-    "basis_sign_combinations=1024 interface_cases=1 mac_cycles=256 "
-    "latency_cycles=257 handshake=VERIFIED\n"
+    "EISA_H_ZD_PAIR_SIM_PASS completed_transactions=1039 "
+    "aborted_by_reset_transactions=1 accepted_transactions=1040 fixed_v1_cases=15 "
+    "contract_cases=9 adversarial_cases=6 signed_basis_combinations=1024 "
+    "interface_reset_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED\n"
 )
 
 
@@ -36,8 +38,10 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
         ),
         "simulator": {"name": "iverilog", "reference_version": "12.0"},
         "coverage": {
-            "observed_transactions": 1039,
-            "basis_sign_combinations": 1024,
+            "completed_transactions": 1039,
+            "aborted_by_reset_transactions": 1,
+            "accepted_transactions": 1040,
+            "signed_basis_combinations": 1024,
             "semantic_cases": 9,
             "adversarial_cases": 6,
             "interface_reset_cases": 1,
@@ -45,12 +49,12 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
             "latency_cycles": 257,
         },
         "reference_artifacts": {
-            "netlist_verilog_sha256": "TO_BE_PINNED_FROM_SLURM",
-            "simulation_log_sha256": "TO_BE_PINNED_FROM_SLURM",
+            "netlist_verilog_sha256": "c0ed60eb8fdc895a74b5307cab260205e166f1025c73adb5c0e9aaf6229d2f5c",
+            "simulation_log_sha256": "5336edb784e4fa938bead43707700994c3b8c572af20ed28befba8e3a4609b1d",
         },
         "claim": {
             "execution_surface": "post_synthesis_simulation",
-            "equivalence": "BOUNDED_EXHAUSTIVE_V1_SIMULATION_PARITY",
+            "equivalence": "SIGNED_BASIS_EXHAUSTIVE_PLUS_FIXED_V1_CASES_SIMULATION_PARITY",
             "formal_equivalence": "NOT_CLAIMED",
             "technology_mapping": "NOT_CLAIMED",
             "timing": "NOT_CLAIMED",
@@ -63,21 +67,34 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
 
 
 def main() -> int:
-    if len(sys.argv) not in (4, 5):
-        raise SystemExit(
-            "usage: validate_postsynth_receipt.py <root> <netlist.v> <simulation.log> [manifest]"
-        )
-    root = pathlib.Path(sys.argv[1]).resolve()
-    netlist_path = pathlib.Path(sys.argv[2]).resolve()
-    simulation_path = pathlib.Path(sys.argv[3]).resolve()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("root", type=pathlib.Path)
+    parser.add_argument("netlist", type=pathlib.Path, nargs="?")
+    parser.add_argument("simulation_log", type=pathlib.Path, nargs="?")
+    parser.add_argument("--manifest", type=pathlib.Path)
+    parser.add_argument("--simulator-version", required=True)
+    parser.add_argument("--contract-only", action="store_true")
+    args = parser.parse_args()
+    root = args.root.resolve()
     manifest_path = (
-        pathlib.Path(sys.argv[4]).resolve()
-        if len(sys.argv) == 5
+        args.manifest.resolve()
+        if args.manifest
         else root / "spec/eisa_h/sedenion_zd_pair_postsynth_v1.json"
     )
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest != expected_manifest(root):
         raise SystemExit("post-synthesis parity manifest mismatch")
+    if args.simulator_version != manifest["simulator"]["reference_version"]:
+        raise SystemExit(
+            f"post-synthesis simulator version mismatch: {args.simulator_version}"
+        )
+    if args.contract_only:
+        print("EISA_H_ZD_PAIR_POSTSYNTH_CONTRACT_PASS")
+        return 0
+    if args.netlist is None or args.simulation_log is None:
+        parser.error("netlist and simulation_log are required without --contract-only")
+    netlist_path = args.netlist.resolve()
+    simulation_path = args.simulation_log.resolve()
     artifacts = manifest["reference_artifacts"]
     if sha256(netlist_path) != artifacts["netlist_verilog_sha256"]:
         raise SystemExit("post-synthesis Verilog netlist hash mismatch")
