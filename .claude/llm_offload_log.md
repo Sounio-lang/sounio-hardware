@@ -76,3 +76,20 @@
   scheduler metadata validation. All were addressed before Slurm execution.
 - Raw local results: `/tmp/sounio-review-gemini.log` and
   `/tmp/sounio-rereview-gemini.log` (ephemeral).
+
+## 2026-07-13 - EISA-H post-synthesis simulation parity v1
+
+- Target: `spec/eisa_h/sedenion_zd_pair_postsynth_v1.json`
+- Task: `math-review`
+- Provider: xAI/Grok 4.3
+- Outcome: `NO MATHEMATICAL CONTENT TO REVIEW`
+- Classification: the provider found no independent derivation in the
+  executable receipt contract. This is recorded as an attempted mandatory
+  review, not a pass.
+- Independent technical review: initial verdict `NOT_READY`; it rejected the
+  overbroad `BOUNDED_EXHAUSTIVE_V1` claim and identified inaccurate transaction
+  accounting, unenforced simulator identity, overbroad mutation wording, and
+  missing lightweight validator coverage. The contract was narrowed to signed
+  basis exhaustiveness plus fixed v1 cases and all findings were addressed
+  before the promotion run.
+- Raw local result: `/tmp/llm-offload-F0cRyV/` (ephemeral).

@@ -24,12 +24,15 @@ combinations on an iterative 256-MAC core; malformed
 operand shape remains an interface-layer rejection. That simulation receipt
 does not claim synthesis or any physical result.
 
-The synthesis gate runs through Slurm and includes the exhaustive RTL gate
+The synthesis gate runs through Slurm and includes the signed-basis-exhaustive RTL gate
 before proving deterministic replay with Yosys 0.33 on the same tool and host.
 It produces a fully lowered generic netlist with no remaining behavioral
-processes. Its cell count is not a physical area claim; technology mapping,
-post-synthesis equivalence, timing, power, FPGA, ASIC, and silicon evidence
-remain separate milestones.
+processes. The same common testbench then executes against the generated
+Verilog netlist, covering all 1,024 signed basis products, fifteen fixed v1
+cases, and one reset-aborted transaction. This is bounded post-synthesis
+simulation parity, not full-domain or formal equivalence. Its cell count is not
+a physical area claim; technology mapping, timing, power, FPGA, ASIC, and
+silicon evidence remain separate milestones.
 
 The direct `scripts/gate_zd_pair_synth.sh` entrypoint is the worker-side gate.
 Use the Slurm launcher from the interactive workspace; its returned job ID,
@@ -37,6 +40,9 @@ node, logs, source commit, and artifact hashes are part of the evidence.
 The bundled Yosys/Icarus toolchain is explicitly limited to Linux x86_64 with
 glibc. Its files and the node's absolute ELF loader are checksum-verified
 before execution, so a heterogeneous loader ABI is classified as blocked.
+The post-synthesis replay is intentionally a long-running promotion gate with a
+one-hour Slurm allocation; GitHub Actions performs only its static contract
+checks.
 
 ## Ownership
 
