@@ -2,9 +2,9 @@
 
 Date: 2026-07-13
 
-Status: **PARTIAL, GEOMETRY REPAIRED**. The exact 5,147-bit reset-base CNF
-is UNSAT in Yosys and awaits independent certificate replay. The exact
-state-step CNF has been emitted but has not yet been solved. Full formal
+Status: **PARTIAL, EXACT RESET CERTIFIED**. The exact 5,147-bit reset-base
+CNF is independently certified UNSAT on compute and workspace surfaces. The
+exact state-step CNF has been emitted but has not yet been solved. Full formal
 equivalence is not claimed.
 
 ## Proof surface
@@ -64,11 +64,17 @@ CNF SHA256  ba2a9b0c064855380f4b81d729574f48dee62b16cc02c99f506da33d9d8b4eeb
 CNF bytes   366667787
 CNF header  p cnf 3304588 8926674
 Yosys SAT   UNSAT (SUCCESS)
-certificate PENDING_INDEPENDENT_REPLAY
+solver      CaDiCaL 1.7.3, rc=20
+DRAT bytes  53713634
+DRAT SHA256 3694d958613a441d7426b367f46e88d285180cb32263116ac43dd2939b30a2d8
+checker     drat-trim rc=0, s VERIFIED
 ```
 
-The current CNF must receive a new solver proof and independent replay before
-it is promoted as the canonical reset certificate.
+Slurm job `5821` ran on `gpuorangefs-multi-r740-proxmox`. `drat-trim`
+verified the proof on that node, then verified it again in the workspace with
+`rc=0` and exactly one normalized `s VERIFIED` marker. The durable artifact
+manifest SHA is
+`3d5c10ffb14c321ec343cd7657540682f7696486f520f301e8650f8029b47cd4`.
 
 ## Current exact state step
 
@@ -108,16 +114,15 @@ artifact capture.
 
 ## Claim boundary
 
-Established by executable local gates: the 32 automatic cutpoints are proved,
-the repaired trigger is exactly the pinned 5,147-bit relation, and both exact
-CNFs are deterministically emitted.
+Established: the 32 automatic cutpoints are proved, the repaired trigger is
+exactly the pinned 5,147-bit relation, both exact CNFs are deterministically
+emitted, and the current exact reset-base CNF is independently certified
+UNSAT.
 
-Not yet independently certified: the current exact reset CNF and the exact
-state-step CNF. Consequently, temporal source-to-synthesized equivalence,
-arbitrary-initial-state equivalence, timing equivalence, and silicon
-equivalence remain unclaimed.
+Not yet independently certified: the exact state-step CNF. Consequently,
+temporal source-to-synthesized equivalence, arbitrary-initial-state
+equivalence, timing equivalence, and silicon equivalence remain unclaimed.
 
-The next run must certify the current reset CNF first, then scout and solve the
-current state-step CNF. Promotion requires solver `rc=20`, a completed proof
-hash, and `drat-trim` returning both `rc=0` and exactly `s VERIFIED` for each
-exact CNF.
+The next run should scout and solve the current state-step CNF. Promotion
+requires solver `rc=20`, a completed proof hash, and `drat-trim` returning
+both `rc=0` and exactly `s VERIFIED` for that exact CNF.

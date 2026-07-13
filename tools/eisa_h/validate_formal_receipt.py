@@ -83,14 +83,23 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
                 "consequent": "the exact 5147-bit state-plus-public relation holds at step 2",
                 "undef_modeling": True,
                 "evidence": {
-                    "status": "CNF_EMITTED_YOSYS_UNSAT_EXTERNAL_CERTIFICATE_PENDING",
+                    "status": "CERTIFIED_UNSAT",
                     "cnf_variables": 3304588,
                     "cnf_clauses": 8926674,
                     "cnf_bytes": 366667787,
                     "cnf_sha256": "ba2a9b0c064855380f4b81d729574f48dee62b16cc02c99f506da33d9d8b4eeb",
                     "yosys_result": "UNSAT",
-                    "proof_sha256": None,
-                    "independent_replay": "NOT_RUN",
+                    "solver": "cadical-1.7.3",
+                    "solver_binary_sha256": "7b73df0a6d9cf3c751a1948300e5baff8e82c4d39bcd88f0c063b5f5cfb8b33e",
+                    "solver_rc": 20,
+                    "proof_format": "binary-drat",
+                    "proof_bytes": 53713634,
+                    "proof_sha256": "3694d958613a441d7426b367f46e88d285180cb32263116ac43dd2939b30a2d8",
+                    "checker": "drat-trim",
+                    "checker_binary_sha256": "92f0aa9575ed519d66a99b8b1b3dde6ece4618ae4c202a3a4b200265dda0aa7a",
+                    "compute_replay": "VERIFIED",
+                    "workspace_replay": "VERIFIED",
+                    "artifact_manifest_sha256": "3d5c10ffb14c321ec343cd7657540682f7696486f520f301e8650f8029b47cd4",
                 },
             },
             "state_step": {
@@ -140,13 +149,13 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
             "slurm_node": "gpuorangefs-multi-r740-proxmox",
         },
         "reference_evidence": {
-            "status": "GEOMETRY_REPAIRED_CURRENT_CERTIFICATES_PENDING",
-            "reset_base_independent_replay": "NOT_RUN_CURRENT_CNF",
+            "status": "EXACT_RESET_CERTIFIED_STATE_STEP_PENDING",
+            "reset_base_independent_replay": "VERIFIED_COMPUTE_AND_WORKSPACE",
             "state_step_independent_replay": "NOT_RUN_CURRENT_CNF",
         },
         "claim": {
             "formal_equivalence": "NOT_CLAIMED",
-            "reset_base": "YOSYS_UNSAT_EXTERNAL_CERTIFICATE_PENDING",
+            "reset_base": "CERTIFIED_UNSAT",
             "state_step": "EXACT_CNF_EMITTED_SOLVER_PENDING",
             "arbitrary_initial_state_equivalence": "NOT_CLAIMED",
             "timing": "NOT_CLAIMED",
@@ -176,7 +185,7 @@ def main() -> int:
             "EISA_H_ZD_PAIR_FORMAL_CONTRACT_PASS "
             "public_equiv_bits=1042 state_relation_bits=4122 "
             "proof_relation_bits=5147 closure_extras_proved=32 "
-            "reference_evidence=GEOMETRY_REPAIRED_CURRENT_CERTIFICATES_PENDING"
+            "reference_evidence=EXACT_RESET_CERTIFIED_STATE_STEP_PENDING"
         )
         return 0
     if args.proof_log is None:

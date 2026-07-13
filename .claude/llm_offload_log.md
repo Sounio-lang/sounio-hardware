@@ -152,8 +152,14 @@
   402 insufficient credits. Neither provider failure is counted as a pass.
 - Current exact CNFs: reset
   `ba2a9b0c064855380f4b81d729574f48dee62b16cc02c99f506da33d9d8b4eeb`
-  is Yosys UNSAT with external certificate pending; state step
+  was subsequently certified by CaDiCaL `rc=20` and binary DRAT
+  `3694d958613a441d7426b367f46e88d285180cb32263116ac43dd2939b30a2d8`.
+  `drat-trim` returned `rc=0` and `s VERIFIED` on Slurm job 5821 and again in
+  the workspace. State step
   `0b5ccf1c1a025ff3fdbc5c4a0a1354d77995b2cd130d41672bceadbf28ac0a8d`
   is emitted with solver not yet run. Full equivalence remains unclaimed.
 - Raw local results: `/tmp/llm-offload-raXVx3/`,
-  `/tmp/llm-offload-7ZuEmH/`, and `/tmp/llm-offload-u0HC1J/` (ephemeral).
+  `/tmp/llm-offload-7ZuEmH/`, `/tmp/llm-offload-u0HC1J/`, and
+  `/tmp/llm-offload-AOQtBt/` (ephemeral). The final xAI receipt review
+  acknowledged the reset certificate and kept state-step promotion pending;
+  DeepSeek and Gemini repeated the same balance/credit failures.
