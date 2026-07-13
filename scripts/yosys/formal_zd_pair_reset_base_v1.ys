@@ -4,3 +4,9 @@ select -clear
 hierarchy -check -top relation_reset_miter
 proc
 opt_clean
+select -module relation_reset_miter
+select -assert-count 5179 t:$equiv
+select -assert-count 5147 t:$assert
+log EISA_H_RESET_MITER_EQUIV_STATUS_BEGIN
+equiv_status t:$equiv
+log EISA_H_RESET_MITER_EQUIV_STATUS_END

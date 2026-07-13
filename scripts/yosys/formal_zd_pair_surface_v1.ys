@@ -37,6 +37,22 @@ select -assert-count 4122 @state_equiv
 select -set proof_equiv @state_equiv @public_equiv %u
 select -assert-count 5147 @proof_equiv
 
+# equiv_miter expands through this transitive $equiv dependency cone. Prove
+# its 32 support cells first so the temporal trigger is exactly @proof_equiv.
+select -set proof_cone_equiv @proof_equiv %ci* t:$equiv %i
+select -assert-count 5179 @proof_cone_equiv
+select -set closure_extras @proof_cone_equiv @proof_equiv %d
+select -assert-count 32 @closure_extras
+log EISA_H_CLOSURE_EXTRAS_EQUIV_MAP_BEGIN
+equiv_status @closure_extras
+log EISA_H_CLOSURE_EXTRAS_EQUIV_MAP_END
+equiv_simple -short -seq 1 @closure_extras
+equiv_status -assert @closure_extras
+log EISA_H_CLOSURE_EXTRAS_PROVED count=32
+log EISA_H_CLOSURE_SUPPORT_STRUCTURAL_MAP_BEGIN
+dump @closure_extras
+log EISA_H_CLOSURE_SUPPORT_STRUCTURAL_MAP_END
+
 # Stable, parser-facing inventory. Keep these as the final three object counts.
 select -count @public_equiv
 select -count @state_equiv

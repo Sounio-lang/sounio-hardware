@@ -78,6 +78,77 @@ print(
 PY
 }
 
+step_geometry_receipt() {
+  local log="$1"
+  python3 - "$log" <<'PY'
+import hashlib
+import pathlib
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+begin = "EISA_H_STEP_CMP_MAP_BEGIN"
+end = "EISA_H_STEP_CMP_MAP_END"
+if text.count(begin) != 1 or text.count(end) != 1:
+    raise SystemExit("state-step cmp map markers are missing or duplicated")
+section = text.split(begin, 1)[1].split(end, 1)[0]
+names = [
+    line.strip()
+    for line in section.splitlines()
+    if line.startswith("state_step_miter/cmp")
+]
+if len(names) != 5147 or len(set(names)) != 5147:
+    raise SystemExit(
+        f"state-step cmp map mismatch: observed={len(names)} "
+        f"unique={len(set(names))} expected=5147"
+    )
+digest = hashlib.sha256(("\n".join(sorted(names)) + "\n").encode()).hexdigest()
+expected = "855df0a4439e4840a21dac7843f8d07ca974026cf67e742561cd38e883f7ef35"
+if digest != expected:
+    raise SystemExit(
+        f"state-step cmp map identity mismatch: observed={digest} expected={expected}"
+    )
+if text.count("EISA_H_CLOSURE_EXTRAS_PROVED count=32") != 1:
+    raise SystemExit("state-step closure extras were not discharged exactly once")
+print(
+    "obligation=state_step geometry=EXACT_PROOF_RELATION "
+    f"cmp_bits=5147 cmp_map_sha256={digest} closure_extras_proved=32"
+)
+PY
+}
+
+miter_geometry_receipt() {
+  local obligation="$1" log="$2"
+  python3 - "$obligation" "$log" <<'PY'
+import pathlib
+import re
+import sys
+
+obligation = sys.argv[1]
+text = pathlib.Path(sys.argv[2]).read_text(encoding="utf-8")
+prefix = "RESET" if obligation == "reset_base" else "STEP"
+module = "relation_reset_miter" if obligation == "reset_base" else "state_step_miter"
+begin = f"EISA_H_{prefix}_MITER_EQUIV_STATUS_BEGIN"
+end = f"EISA_H_{prefix}_MITER_EQUIV_STATUS_END"
+if text.count(begin) != 1 or text.count(end) != 1:
+    raise SystemExit(f"{obligation} miter status markers are missing or duplicated")
+section = text.split(begin, 1)[1].split(end, 1)[0]
+match = re.search(
+    rf"Found (\d+) \$equiv cells in {module}:\n"
+    rf"  Of those cells (\d+) are proven and (\d+) are unproven\.",
+    section,
+)
+if match is None or tuple(map(int, match.groups())) != (5179, 32, 5147):
+    raise SystemExit(
+        f"{obligation} miter geometry mismatch: "
+        f"observed={match.groups() if match else None} expected=(5179, 32, 5147)"
+    )
+print(
+    f"obligation={obligation} miter_equiv_cells=5179 "
+    "proven_support_cells=32 unproven_relation_cells=5147"
+)
+PY
+}
+
 persist_obligation() {
   local obligation="$1" cnf="$2" log="$3" destination
   [[ -n "${EISA_H_FORMAL_ARTIFACT_DIR:-}" ]] || return 0
@@ -111,7 +182,25 @@ run_obligation() {
       "$obligation" "$rc" >&2
     exit 1
   fi
+  if [[ "$obligation" == "state_step" ]]; then
+    if ! step_geometry_receipt "$log"; then
+      persist_obligation "$obligation" "$cnf" "$log"
+      echo "EISA_H_ZD_PAIR_FORMAL_FAIL reason=invalid_state_step_geometry" >&2
+      exit 1
+    fi
+  fi
+  if ! miter_geometry_receipt "$obligation" "$log"; then
+    persist_obligation "$obligation" "$cnf" "$log"
+    printf 'EISA_H_ZD_PAIR_FORMAL_FAIL reason=invalid_miter_geometry obligation=%s\n' \
+      "$obligation" >&2
+    exit 1
+  fi
   persist_obligation "$obligation" "$cnf" "$log"
+  if grep -q 'proof did time out' "$log"; then
+    printf 'EISA_H_ZD_PAIR_FORMAL_BLOCKED reason=obligation_solver_timeout obligation=%s rc=%s log_sha256=%s\n' \
+      "$obligation" "$rc" "$(sha256sum "$log" | cut -d' ' -f1)" >&2
+    exit 42
+  fi
   if [[ "$rc" == "124" || "$rc" == "137" ]]; then
     printf 'EISA_H_ZD_PAIR_FORMAL_BLOCKED reason=obligation_timeout obligation=%s rc=%s log_sha256=%s\n' \
       "$obligation" "$rc" "$(sha256sum "$log" | cut -d' ' -f1)" >&2

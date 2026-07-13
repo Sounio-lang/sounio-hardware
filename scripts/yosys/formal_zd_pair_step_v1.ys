@@ -1,6 +1,20 @@
 script scripts/yosys/formal_zd_pair_surface_v1.ys
-equiv_miter -trigger state_step_miter @proof_equiv
+equiv_miter -trigger -cmp state_step_miter @proof_equiv
+select -clear
+hierarchy -check -top state_step_miter
+select -module state_step_miter
+select -assert-count 5147 o:cmp*
+select -assert-count 1 o:trigger
+log EISA_H_STEP_CMP_MAP_BEGIN
+select -list o:cmp*
+log EISA_H_STEP_CMP_MAP_END
 select -clear
 hierarchy -check -top state_step_miter
 proc
 opt_clean
+select -module state_step_miter
+select -assert-count 5179 t:$equiv
+select -assert-count 1 o:trigger
+log EISA_H_STEP_MITER_EQUIV_STATUS_BEGIN
+equiv_status t:$equiv
+log EISA_H_STEP_MITER_EQUIV_STATUS_END
