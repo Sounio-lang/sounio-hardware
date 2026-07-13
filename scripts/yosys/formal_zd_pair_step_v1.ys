@@ -1,0 +1,6 @@
+script scripts/yosys/formal_zd_pair_surface_v1.ys
+equiv_miter -trigger state_step_miter @proof_equiv
+select -clear
+hierarchy -check -top state_step_miter
+proc
+opt_clean

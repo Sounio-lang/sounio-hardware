@@ -93,3 +93,35 @@
   basis exhaustiveness plus fixed v1 cases and all findings were addressed
   before the promotion run.
 - Raw local result: `/tmp/llm-offload-F0cRyV/` (ephemeral).
+
+## 2026-07-13 - EISA-H split formal obligations v1
+
+- Targets: split Yosys surface/reset/step recipes, formal gates, Slurm artifact
+  persistence, `spec/eisa_h/sedenion_zd_pair_formal_v1.json`, and
+  `docs/reviews/2026-07-13-eisa-h-zd-formal-split-v1.md`.
+- Mandatory math review: xAI/Grok 4.3 initially found that the gate could emit
+  a pass marker before independent certificate replay. The gate was repaired
+  to remain `BLOCKED` until the state-step certificate is pinned. A later
+  math-review rerun returned `NO MATHEMATICAL CONTENT TO REVIEW`; it is recorded
+  as an attempted review, not a second pass.
+- Adversarial technical review: an internal review identified the fundamental
+  mismatch between an output-only reset base and the full state invariant used
+  by the step. The base was rebuilt over the complete 5,147-bit relation. It
+  also requested mapping-identity hashes, strict DIMACS validation, stable
+  timeout classification, and persisted Slurm artifacts; those repairs were
+  implemented before commit. The final focused re-review returned `READY`
+  after exact artifact-manifest coverage and 17 launcher-contract cases passed.
+- External receipt review: xAI/Grok 4.3 found the final receipt internally
+  consistent with the `async2sync` plus `sat -seq` methodology and confirmed
+  the exact boundary: reset base certified, state step not certified, full
+  equivalence not claimed.
+- Required external-facing fan-out: DeepSeek returned `Insufficient Balance`;
+  Gemini returned OpenRouter HTTP 402 insufficient credits. Neither is counted
+  as a review pass.
+- Evidence: reset-base CNF `fc1bff43...d6893cf` is independently certified by
+  binary DRAT `8f457cd3...21d3b9`, replayed successfully on compute and login.
+  State-step CNF `2804931a...caead0` timed out after 1,200 seconds and remains
+  blocked.
+- Raw local results: `/tmp/llm-offload-CdglbS/`,
+  `/tmp/llm-offload-5xT9IB/`, `/tmp/llm-offload-m4EJke/`, and
+  `/tmp/llm-offload-EP14cm/` (ephemeral).

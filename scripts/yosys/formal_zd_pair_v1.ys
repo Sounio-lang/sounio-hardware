@@ -1,0 +1,3 @@
+# Compatibility entrypoint for the formal surface inventory.
+# The proof is intentionally split between reset_base_v1 and step_v1.
+script scripts/yosys/formal_zd_pair_surface_v1.ys

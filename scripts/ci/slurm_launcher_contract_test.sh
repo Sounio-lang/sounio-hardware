@@ -10,18 +10,20 @@ REPO_SHA="$(printf 'a%.0s' {1..64})"
 TOOLCHAIN_SHA="$(printf 'b%.0s' {1..64})"
 
 make_fixture() {
-  local dir="$1" gate_rc="$2" source="${3:-$COMMIT}"
+  local dir="$1" gate_rc="$2" source="${3:-$COMMIT}" gate_id="${4:-synthesis}"
   mkdir -p "$dir"
-  printf '%s\n' "source_commit=$source" "repo_manifest_sha256=$REPO_SHA" \
+  printf '%s\n' "source_commit=$source" "gate_id=$gate_id" "repo_manifest_sha256=$REPO_SHA" \
     "toolchain_manifest_sha256=$TOOLCHAIN_SHA" > "$dir/request.txt"
-  printf '%s\n' "slurm_job_id=12345" "slurm_node=compute-1" "source_commit=$source" \
+  printf '%s\n' "slurm_job_id=12345" "slurm_node=compute-1" "source_commit=$source" "gate_id=$gate_id" \
     "repo_manifest_sha256=$REPO_SHA" "toolchain_manifest_sha256=$TOOLCHAIN_SHA" \
     > "$dir/worker_meta.txt"
-  if [[ "$gate_rc" == "0" ]]; then
+  if [[ "$gate_rc" == "0" && "$gate_id" == "synthesis" ]]; then
     printf '%s\n' \
       "EISA_H_ZD_PAIR_SYNTH_GATE_PASS" \
       "EISA_H_ZD_PAIR_POSTSYNTH_GATE_PASS" \
       > "$dir/gate.log"
+  elif [[ "$gate_rc" == "0" && "$gate_id" == "formal" ]]; then
+    printf '%s\n' "EISA_H_ZD_PAIR_FORMAL_GATE_PASS" > "$dir/gate.log"
   else
     printf 'gate failed rc=%s\n' "$gate_rc" > "$dir/gate.log"
   fi
@@ -44,32 +46,65 @@ expect_rc() {
 
 make_fixture "$TMP/pass" 0
 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/pass" \
-  --expected-commit "$COMMIT" --srun-rc 0 >/dev/null
+  --expected-commit "$COMMIT" --srun-rc 0 --gate-id synthesis >/dev/null
+
+make_fixture "$TMP/formal-pass" 0 "$COMMIT" formal
+python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/formal-pass" \
+  --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal >/dev/null
+
+cp -a "$TMP/formal-pass" "$TMP/formal-artifacts-pass"
+mkdir -p "$TMP/formal-artifacts-pass/formal_artifacts/reset_base"
+printf 'bounded proof artifact\n' > \
+  "$TMP/formal-artifacts-pass/formal_artifacts/reset_base/yosys.log"
+(cd "$TMP/formal-artifacts-pass" && \
+  find . -type f ! -name SHA256SUMS -print0 | LC_ALL=C sort -z | \
+  xargs -0 sha256sum | sed 's#  \./#  #' > SHA256SUMS)
+python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/formal-artifacts-pass" \
+  --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal >/dev/null
+
+cp -a "$TMP/formal-pass" "$TMP/formal-artifact-unlisted"
+mkdir -p "$TMP/formal-artifact-unlisted/formal_artifacts/reset_base"
+printf 'unlisted\n' > "$TMP/formal-artifact-unlisted/formal_artifacts/reset_base/yosys.log"
+expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" \
+  "$TMP/formal-artifact-unlisted" --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal
+
+cp -a "$TMP/formal-pass" "$TMP/formal-artifact-symlink"
+mkdir -p "$TMP/formal-artifact-symlink/formal_artifacts/reset_base"
+ln -s /etc/hosts "$TMP/formal-artifact-symlink/formal_artifacts/reset_base/yosys.log"
+(cd "$TMP/formal-artifact-symlink" && \
+  find . -type f -o -type l | LC_ALL=C sort | xargs sha256sum | \
+  sed 's#  \./#  #' > SHA256SUMS)
+expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" \
+  "$TMP/formal-artifact-symlink" --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal
+
+printf 'tampered\n' >> "$TMP/formal-artifacts-pass/formal_artifacts/reset_base/yosys.log"
+expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" \
+  "$TMP/formal-artifacts-pass" --expected-commit "$COMMIT" --srun-rc 0 --gate-id formal
 
 make_fixture "$TMP/blocked" 42
 expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/blocked" \
-  --expected-commit "$COMMIT" --srun-rc 42
+  --expected-commit "$COMMIT" --srun-rc 42 --gate-id synthesis
 
 make_fixture "$TMP/fail" 1
 expect_rc 1 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/fail" \
-  --expected-commit "$COMMIT" --srun-rc 1
+  --expected-commit "$COMMIT" --srun-rc 1 --gate-id synthesis
 
 expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/pass" \
-  --expected-commit "$COMMIT" --srun-rc 1
+  --expected-commit "$COMMIT" --srun-rc 1 --gate-id synthesis
 
 cp -a "$TMP/pass" "$TMP/corrupt"
 printf 'corruption\n' >> "$TMP/corrupt/gate.log"
 expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/corrupt" \
-  --expected-commit "$COMMIT" --srun-rc 0
+  --expected-commit "$COMMIT" --srun-rc 0 --gate-id synthesis
 
 make_fixture "$TMP/wrong-source" 0 "1123456789abcdef0123456789abcdef01234567"
 expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/wrong-source" \
-  --expected-commit "$COMMIT" --srun-rc 0
+  --expected-commit "$COMMIT" --srun-rc 0 --gate-id synthesis
 
 cp -a "$TMP/pass" "$TMP/missing"
 rm "$TMP/missing/worker_meta.txt"
 expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$TMP/missing" \
-  --expected-commit "$COMMIT" --srun-rc 0
+  --expected-commit "$COMMIT" --srun-rc 0 --gate-id synthesis
 
 cp -a "$TMP/pass" "$TMP/missing-postsynth-marker"
 printf '%s\n' "EISA_H_ZD_PAIR_SYNTH_GATE_PASS" \
@@ -77,7 +112,7 @@ printf '%s\n' "EISA_H_ZD_PAIR_SYNTH_GATE_PASS" \
 (cd "$TMP/missing-postsynth-marker" && \
   sha256sum request.txt worker_meta.txt gate.log gate.rc > SHA256SUMS)
 expect_rc 42 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" \
-  "$TMP/missing-postsynth-marker" --expected-commit "$COMMIT" --srun-rc 0
+  "$TMP/missing-postsynth-marker" --expected-commit "$COMMIT" --srun-rc 0 --gate-id synthesis
 
 duplicate="$TMP/duplicate-output"
 mkdir "$duplicate"
@@ -98,19 +133,25 @@ tar -xzf "$tmp/payload.tgz" -C "$tmp"
 source_commit="$(sed -n 's/^source_commit=//p' "$tmp/request.txt")"
 repo_sha="$(sed -n 's/^repo_manifest_sha256=//p' "$tmp/request.txt")"
 toolchain_sha="$(sed -n 's/^toolchain_manifest_sha256=//p' "$tmp/request.txt")"
+gate_id="$(sed -n 's/^gate_id=//p' "$tmp/request.txt")"
 mkdir "$tmp/result"
 cp "$tmp/request.txt" "$tmp/result/request.txt"
 printf '%s\n' \
   "slurm_job_id=12345" \
   "slurm_node=mock-node" \
   "source_commit=$source_commit" \
+  "gate_id=$gate_id" \
   "repo_manifest_sha256=$repo_sha" \
   "toolchain_manifest_sha256=$toolchain_sha" \
   > "$tmp/result/worker_meta.txt"
-printf '%s\n' \
-  EISA_H_ZD_PAIR_SYNTH_GATE_PASS \
-  EISA_H_ZD_PAIR_POSTSYNTH_GATE_PASS \
-  > "$tmp/result/gate.log"
+if [[ "$gate_id" == "formal" ]]; then
+  printf '%s\n' EISA_H_ZD_PAIR_FORMAL_GATE_PASS > "$tmp/result/gate.log"
+else
+  printf '%s\n' \
+    EISA_H_ZD_PAIR_SYNTH_GATE_PASS \
+    EISA_H_ZD_PAIR_POSTSYNTH_GATE_PASS \
+    > "$tmp/result/gate.log"
+fi
 printf '%s\n' 0 > "$tmp/result/gate.rc"
 (cd "$tmp/result" && sha256sum request.txt worker_meta.txt gate.log gate.rc > SHA256SUMS)
 tar -C "$tmp/result" -czf "$tmp/result.tgz" .
@@ -132,9 +173,13 @@ env SRUN_BIN="$TMP/mock-srun" OUT_DIR="$launcher_pass" \
 grep -Fx EISA_H_ZD_PAIR_SLURM_PASS "$TMP/launcher-pass.out" >/dev/null
 grep -E '^srun_stderr_sha256=[0-9a-f]{64}$' "$TMP/launcher-pass.out" >/dev/null
 
+env SRUN_BIN="$TMP/mock-srun" OUT_DIR="$TMP/launcher-formal-pass" \
+  "$TMP/repo/scripts/slurm/run_zd_pair_formal.sh" > "$TMP/launcher-formal-pass.out"
+grep -Fx EISA_H_ZD_PAIR_FORMAL_SLURM_PASS "$TMP/launcher-formal-pass.out" >/dev/null
+
 expect_rc 42 env SRUN_BIN="$TMP/mock-srun" MOCK_SRUN_MODE=missing \
   OUT_DIR="$TMP/launcher-missing" "$TMP/repo/scripts/slurm/run_zd_pair_synth.sh"
 grep -F "mock scheduler rejected payload" "$TMP/launcher-missing/srun.err" >/dev/null
 [[ "$(git -C "$ROOT" rev-parse HEAD)" == "$ORIGINAL_HEAD" ]]
 
-echo "SLURM_LAUNCHER_CONTRACT_PASS cases=11"
+echo "SLURM_LAUNCHER_CONTRACT_PASS cases=17"

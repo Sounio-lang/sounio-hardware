@@ -1,0 +1,54 @@
+# Build the source and synthesized designs under the same synchronous model.
+read_verilog -sv rtl/eisa_h_sed16_zd_pair_v1.sv
+hierarchy -check -top eisa_h_sed16_zd_pair_v1
+proc
+memory
+design -stash gold_design
+
+design -reset
+read_verilog -sv rtl/eisa_h_sed16_zd_pair_v1.sv
+hierarchy -check -top eisa_h_sed16_zd_pair_v1
+proc
+memory
+synth -top eisa_h_sed16_zd_pair_v1
+design -stash gate_design
+
+design -reset
+design -copy-from gold_design -as gold eisa_h_sed16_zd_pair_v1
+design -copy-from gate_design -as gate eisa_h_sed16_zd_pair_v1
+async2sync gold gate
+equiv_make gold gate equiv
+hierarchy -check -top equiv
+
+# The architectural surface is exactly the eight public result/status ports.
+select -module equiv
+select -set public_ports o:ready o:busy o:done o:classification o:error_code o:product_is_zero o:product_flat o:mac_cycles
+select -set public_cone @public_ports %ci1
+select -set public_equiv @public_cone t:$equiv %i
+select -assert-count 1042 @public_equiv
+
+# This state relation is sufficient to determine the next architectural state.
+# product_flat aliases product and is removed here to avoid counting it twice.
+select -set state_wires w:busy w:done w:finalize w:classification w:error_code w:product_is_zero w:mac_cycles w:i_index w:j_index w:lhs_latched* w:rhs_latched* w:accumulator* w:product* w:product_flat* %d
+select -set state_cone @state_wires %ci1
+select -set state_equiv @state_cone t:$equiv %i
+select -assert-count 4122 @state_equiv
+
+select -set proof_equiv @state_equiv @public_equiv %u
+select -assert-count 5147 @proof_equiv
+
+# Stable, parser-facing inventory. Keep these as the final three object counts.
+select -count @public_equiv
+select -count @state_equiv
+select -count @proof_equiv
+
+# Bind the counts to the actual compared signal pairs, not just set sizes.
+log EISA_H_PUBLIC_EQUIV_MAP_BEGIN
+equiv_status @public_equiv
+log EISA_H_PUBLIC_EQUIV_MAP_END
+log EISA_H_STATE_EQUIV_MAP_BEGIN
+equiv_status @state_equiv
+log EISA_H_STATE_EQUIV_MAP_END
+log EISA_H_PROOF_EQUIV_MAP_BEGIN
+equiv_status @proof_equiv
+log EISA_H_PROOF_EQUIV_MAP_END
