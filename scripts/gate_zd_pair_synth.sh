@@ -25,7 +25,7 @@ grep -F "EISA_H_BASIS_ROM_PASS " "$TMP/basis-rom.log" >/dev/null
 run_synthesis() {
   local name="$1"
   local receipt_command
-  receipt_command="tee -o $TMP/$name-stat.json stat -json; write_json $TMP/$name-netlist.json"
+  receipt_command="tee -o $TMP/$name-stat.json stat -json; write_json $TMP/$name-netlist.json; write_verilog -noattr $TMP/$name-netlist.v"
   if (cd "$ROOT" && timeout 120s yosys -Q \
       -s scripts/yosys/synth_zd_pair_v1.ys -p "$receipt_command" > "$TMP/$name-yosys.log" 2>&1); then
     :
@@ -56,6 +56,7 @@ run_synthesis a
 run_synthesis b
 cmp "$TMP/a-stat.json" "$TMP/b-stat.json"
 cmp "$TMP/a-netlist.json" "$TMP/b-netlist.json"
+cmp "$TMP/a-netlist.v" "$TMP/b-netlist.v"
 
 VALIDATION="$(python3 "$ROOT/tools/eisa_h/validate_synth_receipt.py" \
   "$ROOT" "$TMP/a-stat.json" "$TMP/a-netlist.json")"
@@ -136,3 +137,78 @@ printf '%s\n' \
   "manifest_sha256=$MANIFEST_SHA" \
   "tool=yosys version=$YOSYS_VERSION target=generic-cell-netlist" \
   "execution_surface=generic_synthesis equivalence=NOT_CLAIMED timing=NOT_CLAIMED silicon=NOT_CLAIMED"
+
+EXPECTED_POSTSYNTH_RECEIPT="EISA_H_ZD_PAIR_RTL_PASS rtl_cases=15 contract_cases=9 adversarial_cases=6 basis_sign_combinations=1024 interface_cases=1 mac_cycles=256 latency_cycles=257 handshake=VERIFIED"
+if ! iverilog -g2012 -Wall -s tb_sed16_zd_pair_v1 \
+    -o "$TMP/postsynth.vvp" \
+    "$TMP/a-netlist.v" \
+    "$ROOT/tb/eisa_h/tb_sed16_zd_pair_v1.sv" \
+    > "$TMP/postsynth-compile.log" 2>&1; then
+  printf '%s\n' "EISA_H_ZD_PAIR_POSTSYNTH_FAIL reason=netlist_compile" >&2
+  tail -40 "$TMP/postsynth-compile.log" >&2
+  exit 1
+fi
+vvp "$TMP/postsynth.vvp" > "$TMP/postsynth.log"
+grep -Fx "$EXPECTED_POSTSYNTH_RECEIPT" "$TMP/postsynth.log" >/dev/null
+vvp "$TMP/postsynth.vvp" > "$TMP/postsynth-replay.log"
+cmp "$TMP/postsynth.log" "$TMP/postsynth-replay.log"
+
+POSTSYNTH_NETLIST_SHA="$(sha256sum "$TMP/a-netlist.v" | cut -d' ' -f1)"
+POSTSYNTH_LOG_SHA="$(sha256sum "$TMP/postsynth.log" | cut -d' ' -f1)"
+printf '%s\n' \
+  "EISA_H_ZD_PAIR_POSTSYNTH_CANDIDATE" \
+  "netlist_verilog_sha256=$POSTSYNTH_NETLIST_SHA" \
+  "simulation_log_sha256=$POSTSYNTH_LOG_SHA"
+
+POSTSYNTH_VALIDATION="$(python3 "$ROOT/tools/eisa_h/validate_postsynth_receipt.py" \
+  "$ROOT" "$TMP/a-netlist.v" "$TMP/postsynth.log")"
+[[ "$POSTSYNTH_VALIDATION" == EISA_H_ZD_PAIR_POSTSYNTH_VALIDATION_PASS* ]]
+
+POSTSYNTH_MUTATIONS=0
+python3 - "$ROOT/spec/eisa_h/sedenion_zd_pair_postsynth_v1.json" "$TMP/postsynth-manifest-tamper.json" <<'PY'
+import json
+import pathlib
+import sys
+
+source, target = map(pathlib.Path, sys.argv[1:])
+value = json.loads(source.read_text(encoding="utf-8"))
+value["reference_artifacts"]["netlist_verilog_sha256"] = "0" * 64
+target.write_text(json.dumps(value, sort_keys=True), encoding="utf-8")
+PY
+if python3 "$ROOT/tools/eisa_h/validate_postsynth_receipt.py" \
+  "$ROOT" "$TMP/a-netlist.v" "$TMP/postsynth.log" \
+  "$TMP/postsynth-manifest-tamper.json" >/dev/null 2>&1; then
+  printf '%s\n' "post-synthesis manifest mutation unexpectedly passed" >&2
+  exit 1
+fi
+POSTSYNTH_MUTATIONS=$((POSTSYNTH_MUTATIONS + 1))
+
+sed 's/basis_sign_combinations=1024/basis_sign_combinations=1023/' \
+  "$TMP/postsynth.log" > "$TMP/postsynth-log-tamper.log"
+if python3 "$ROOT/tools/eisa_h/validate_postsynth_receipt.py" \
+  "$ROOT" "$TMP/a-netlist.v" "$TMP/postsynth-log-tamper.log" >/dev/null 2>&1; then
+  printf '%s\n' "post-synthesis log mutation unexpectedly passed" >&2
+  exit 1
+fi
+POSTSYNTH_MUTATIONS=$((POSTSYNTH_MUTATIONS + 1))
+
+cp "$TMP/a-netlist.v" "$TMP/postsynth-netlist-tamper.v"
+printf '%s\n' '// receipt-identity mutation' >> "$TMP/postsynth-netlist-tamper.v"
+if python3 "$ROOT/tools/eisa_h/validate_postsynth_receipt.py" \
+  "$ROOT" "$TMP/postsynth-netlist-tamper.v" "$TMP/postsynth.log" >/dev/null 2>&1; then
+  printf '%s\n' "post-synthesis netlist mutation unexpectedly passed" >&2
+  exit 1
+fi
+POSTSYNTH_MUTATIONS=$((POSTSYNTH_MUTATIONS + 1))
+
+POSTSYNTH_MANIFEST_SHA="$(sha256sum "$ROOT/spec/eisa_h/sedenion_zd_pair_postsynth_v1.json" | cut -d' ' -f1)"
+printf '%s\n' \
+  "EISA_H_ZD_PAIR_POSTSYNTH_GATE_PASS" \
+  "parity=eisa_h.sedenion_zd_pair.postsynth.v1" \
+  "observed_transactions=1039 basis_sign_combinations=1024 adversarial_cases=6 interface_cases=1" \
+  "post_synthesis_simulation_parity=VERIFIED deterministic_replay=VERIFIED mutations=$POSTSYNTH_MUTATIONS/$POSTSYNTH_MUTATIONS" \
+  "netlist_verilog_sha256=$POSTSYNTH_NETLIST_SHA" \
+  "simulation_log_sha256=$POSTSYNTH_LOG_SHA" \
+  "manifest_sha256=$POSTSYNTH_MANIFEST_SHA" \
+  "simulator=iverilog version=$(iverilog -V 2>/dev/null | awk 'NR == 1 { print $4 }')" \
+  "equivalence=BOUNDED_EXHAUSTIVE_V1_SIMULATION_PARITY formal_equivalence=NOT_CLAIMED timing=NOT_CLAIMED silicon=NOT_CLAIMED"

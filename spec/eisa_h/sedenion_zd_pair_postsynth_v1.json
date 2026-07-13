@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "parity_id": "eisa_h.sedenion_zd_pair.postsynth.v1",
+  "synthesis_id": "eisa_h.sedenion_zd_pair.synth.v1",
+  "rtl_implementation_id": "eisa_h.sedenion_zd_pair.rtl.v1",
+  "top_module": "eisa_h_sed16_zd_pair_v1",
+  "source_rtl_sha256": "90fc920d02eb9719fec3d63835e460bad8ce5636fc94002ff4620958b5b27157",
+  "testbench_sha256": "777b27d4b299164927a4c6357e8f891d9fb0a4802fe5bf5a44132315947e304d",
+  "recipe_sha256": "3e37c282e0b291ce3ddf1b542456db68f20b0b4dfb3d56a1d5ca8efd5f50dae8",
+  "synthesis_manifest_sha256": "677209a4435b0102147317c2c1fc0193c7a4ab0a1e2b36633b7499d781546ab0",
+  "simulator": {
+    "name": "iverilog",
+    "reference_version": "12.0"
+  },
+  "coverage": {
+    "observed_transactions": 1039,
+    "basis_sign_combinations": 1024,
+    "semantic_cases": 9,
+    "adversarial_cases": 6,
+    "interface_reset_cases": 1,
+    "mac_cycles": 256,
+    "latency_cycles": 257
+  },
+  "reference_artifacts": {
+    "netlist_verilog_sha256": "TO_BE_PINNED_FROM_SLURM",
+    "simulation_log_sha256": "TO_BE_PINNED_FROM_SLURM"
+  },
+  "claim": {
+    "execution_surface": "post_synthesis_simulation",
+    "equivalence": "BOUNDED_EXHAUSTIVE_V1_SIMULATION_PARITY",
+    "formal_equivalence": "NOT_CLAIMED",
+    "technology_mapping": "NOT_CLAIMED",
+    "timing": "NOT_CLAIMED",
+    "power": "NOT_CLAIMED",
+    "fpga": "NOT_CLAIMED",
+    "asic": "NOT_CLAIMED",
+    "silicon": "NOT_CLAIMED"
+  }
+}
