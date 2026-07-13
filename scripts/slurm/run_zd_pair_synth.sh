@@ -5,8 +5,14 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PARTITION="${PARTITION:-all}"
 CPUS="${CPUS:-4}"
 MEMORY="${MEMORY:-4G}"
-TIME_LIMIT="${TIME_LIMIT:-01:00:00}"
-RUN_ID="${RUN_ID:-eisa-h-zd-synth-$(date -u +%Y%m%dT%H%M%S.%NZ)-$$-$RANDOM}"
+GATE_ID="${EISA_H_GATE_ID:-synthesis}"
+case "$GATE_ID" in
+  synthesis) DEFAULT_TIME_LIMIT="01:00:00" ;;
+  formal) DEFAULT_TIME_LIMIT="00:30:00" ;;
+  *) echo "SLURM_GATE_BLOCKED reason=unsupported_gate gate_id=$GATE_ID" >&2; exit 42 ;;
+esac
+TIME_LIMIT="${TIME_LIMIT:-$DEFAULT_TIME_LIMIT}"
+RUN_ID="${RUN_ID:-eisa-h-zd-$GATE_ID-$(date -u +%Y%m%dT%H%M%S.%NZ)-$$-$RANDOM}"
 OUT_DIR="${OUT_DIR:-/tmp/sounio-hardware-slurm/$RUN_ID}"
 STAGE="$(mktemp -d)"
 PAYLOAD="$STAGE/payload.tgz"
@@ -146,6 +152,7 @@ TOOLCHAIN_MANIFEST_SHA="$(sha256sum "$STAGE/toolchain.SHA256SUMS" | cut -d' ' -f
 
 printf '%s\n' \
   "run_id=$RUN_ID" \
+  "gate_id=$GATE_ID" \
   "source_commit=$SOURCE_COMMIT" \
   "repo_manifest_sha256=$REPO_MANIFEST_SHA" \
   "toolchain_manifest_sha256=$TOOLCHAIN_MANIFEST_SHA" \
@@ -188,11 +195,18 @@ export LD_LIBRARY_PATH="$ROOT/lib:${LD_LIBRARY_PATH:-}"
 expected_repo_manifest=$(sed -n "s/^repo_manifest_sha256=//p" "$ROOT/request.txt")
 observed_repo_manifest=$(sha256sum "$ROOT/repo.SHA256SUMS" | cut -d" " -f1)
 [[ -n "$expected_repo_manifest" && "$observed_repo_manifest" == "$expected_repo_manifest" ]]
+gate_id=$(sed -n "s/^gate_id=//p" "$ROOT/request.txt")
+case "$gate_id" in
+  synthesis) gate_script=scripts/gate_zd_pair_synth.sh ;;
+  formal) gate_script=scripts/gate_zd_pair_formal.sh ;;
+  *) exit 42 ;;
+esac
 mkdir -p "$ROOT/result"
 cp "$ROOT/request.txt" "$ROOT/result/request.txt"
 printf "%s\n" \
   "slurm_job_id=${SLURM_JOB_ID:-unknown}" \
   "slurm_node=$(hostname)" \
+  "gate_id=$gate_id" \
   "source_commit=$(sed -n "s/^source_commit=//p" "$ROOT/request.txt")" \
   "repo_manifest_sha256=$observed_repo_manifest" \
   "toolchain_manifest_sha256=$observed_toolchain_manifest" \
@@ -202,7 +216,7 @@ printf "%s\n" \
   > "$ROOT/result/worker_meta.txt"
 cd "$ROOT/repo"
 set +e
-bash scripts/gate_zd_pair_synth.sh > "$ROOT/result/gate.log" 2>&1
+bash "$gate_script" > "$ROOT/result/gate.log" 2>&1
 rc=$?
 set -e
 printf "%s\n" "$rc" > "$ROOT/result/gate.rc"
@@ -226,7 +240,7 @@ printf '%s' "$RESULT_LINE" | base64 -d > "$OUT_DIR/result.tgz"
 tar -xzf "$OUT_DIR/result.tgz" -C "$OUT_DIR"
 set +e
 python3 "$ROOT/tools/eisa_h/validate_slurm_result.py" "$OUT_DIR" \
-  --expected-commit "$SOURCE_COMMIT" --srun-rc "$srun_rc"
+  --expected-commit "$SOURCE_COMMIT" --srun-rc "$srun_rc" --gate-id "$GATE_ID"
 validation_rc=$?
 set -e
 if [[ "$validation_rc" != "0" ]]; then

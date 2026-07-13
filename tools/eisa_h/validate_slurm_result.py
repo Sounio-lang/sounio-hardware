@@ -11,6 +11,19 @@ import re
 REQUIRED_FILES = {"request.txt", "worker_meta.txt", "gate.log", "gate.rc"}
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
+GATES = {
+    "synthesis": {
+        "markers": (
+            "EISA_H_ZD_PAIR_SYNTH_GATE_PASS",
+            "EISA_H_ZD_PAIR_POSTSYNTH_GATE_PASS",
+        ),
+        "pass": "EISA_H_ZD_PAIR_SLURM_PASS",
+    },
+    "formal": {
+        "markers": ("EISA_H_ZD_PAIR_FORMAL_GATE_PASS",),
+        "pass": "EISA_H_ZD_PAIR_FORMAL_SLURM_PASS",
+    },
+}
 
 
 def sha256(path: pathlib.Path) -> str:
@@ -54,6 +67,7 @@ def main() -> int:
     parser.add_argument("artifact_dir", type=pathlib.Path)
     parser.add_argument("--expected-commit", required=True)
     parser.add_argument("--srun-rc", required=True, type=int)
+    parser.add_argument("--gate-id", required=True, choices=sorted(GATES))
     args = parser.parse_args()
     root = args.artifact_dir.resolve()
     try:
@@ -69,6 +83,8 @@ def main() -> int:
         request_source = request.get("source_commit", "")
         repo_sha = request.get("repo_manifest_sha256", "")
         toolchain_sha = request.get("toolchain_manifest_sha256", "")
+        request_gate = request.get("gate_id", "")
+        worker_gate = worker.get("gate_id", "")
         if not job_id.isdigit() or int(job_id) <= 0:
             raise ValueError(f"invalid Slurm job ID: {job_id!r}")
         if not node or node == "unknown":
@@ -81,32 +97,35 @@ def main() -> int:
             raise ValueError("toolchain manifest identity mismatch")
         if gate_rc != args.srun_rc:
             raise ValueError(f"return-code mismatch: srun={args.srun_rc} gate={gate_rc}")
+        if request_gate != args.gate_id or worker_gate != args.gate_id:
+            raise ValueError(
+                f"gate identity mismatch: expected={args.gate_id} "
+                f"request={request_gate} worker={worker_gate}"
+            )
     except (OSError, ValueError) as error:
         print(f"SLURM_SYNTH_BLOCKED reason=invalid_return_receipt detail={error}")
         return 42
 
     gate_log = (root / "gate.log").read_text(encoding="utf-8")
     common = f"job_id={job_id} node={node} source_commit={source} artifact_dir={root}"
+    classification = "FORMAL" if args.gate_id == "formal" else "SYNTH"
     if gate_rc == 42:
-        print(f"SLURM_SYNTH_BLOCKED reason=worker_gate_blocked {common}")
+        print(f"SLURM_{classification}_BLOCKED reason=worker_gate_blocked {common}")
         return 42
     if gate_rc != 0:
-        print(f"SLURM_SYNTH_FAIL rc={gate_rc} {common}")
+        print(f"SLURM_{classification}_FAIL rc={gate_rc} {common}")
         return gate_rc
-    required_markers = (
-        "EISA_H_ZD_PAIR_SYNTH_GATE_PASS",
-        "EISA_H_ZD_PAIR_POSTSYNTH_GATE_PASS",
-    )
+    required_markers = GATES[args.gate_id]["markers"]
     missing_markers = [
         marker for marker in required_markers if f"\n{marker}\n" not in f"\n{gate_log}"
     ]
     if missing_markers:
         print(
-            "SLURM_SYNTH_BLOCKED reason=missing_gate_pass_marker "
+            f"SLURM_{classification}_BLOCKED reason=missing_gate_pass_marker "
             f"markers={','.join(missing_markers)}"
         )
         return 42
-    print("EISA_H_ZD_PAIR_SLURM_PASS")
+    print(GATES[args.gate_id]["pass"])
     print(common)
     print(f"gate_log_sha256={sha256(root / 'gate.log')}")
     return 0

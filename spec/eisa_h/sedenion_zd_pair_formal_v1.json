@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "formal_id": "eisa_h.sedenion_zd_pair.formal.v1",
+  "rtl_implementation_id": "eisa_h.sedenion_zd_pair.rtl.v1",
+  "source_rtl_sha256": "90fc920d02eb9719fec3d63835e460bad8ce5636fc94002ff4620958b5b27157",
+  "recipe_sha256": "f17cf8b3d2ab12f3b8a65b5bb2998e87c77fe9e26790854fe5aaa3c7f6c94a35",
+  "post_synthesis_manifest_sha256": "ad5d0d825d8a4c6607d9f07cf056a5e7137a9f00605959f12dc3dfda250220c9",
+  "tool": {
+    "name": "yosys",
+    "reference_version": "0.33"
+  },
+  "method": {
+    "state_normalization": ["async2sync", "clk2fflogic"],
+    "proof": "equiv_induct",
+    "undef_modeling": true,
+    "maximum_induction_sequence": 4
+  },
+  "reference_evidence": {
+    "equiv_cells": -1,
+    "proven_cells": -1,
+    "unproven_cells": 0,
+    "proof_log_sha256": "TO_BE_PINNED_FROM_SLURM"
+  },
+  "claim": {
+    "formal_surface": "OBSERVABLE_SYNC_CONDITIONAL_TEMPORAL_INDUCTION_NON_DIVERGENCE",
+    "reset_anchor": "SEPARATE_POST_SYNTHESIS_SIMULATION_RECEIPT",
+    "arbitrary_initial_state_equivalence": "NOT_CLAIMED",
+    "formal_equivalence_without_precondition": "NOT_CLAIMED",
+    "timing": "NOT_CLAIMED",
+    "silicon": "NOT_CLAIMED"
+  }
+}
