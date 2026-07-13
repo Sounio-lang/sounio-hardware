@@ -12,6 +12,7 @@ Run the current gate with:
 
 ```sh
 bash scripts/gate_zd_pair_contract.sh
+bash scripts/gate_zd_pair_formal_partition_surface.sh
 bash scripts/slurm/run_zd_pair_synth.sh
 ```
 
@@ -43,6 +44,13 @@ before execution, so a heterogeneous loader ABI is classified as blocked.
 The post-synthesis replay is intentionally a long-running promotion gate with a
 one-hour Slurm allocation; GitHub Actions performs only its static contract
 checks.
+
+The state-step formal obligation also has an exact consequent-partition
+surface. It preserves the complete 5,147-bit relation as the antecedent of
+every sub-obligation and divides only the next-step consequent into four
+disjoint maps whose union is checked against the original map hash. This is a
+proof decomposition, not a weaker invariant. Full formal equivalence remains
+unclaimed until every partition CNF has an independently replayed certificate.
 
 ## Ownership
 

@@ -3,9 +3,9 @@
 Date: 2026-07-13
 
 Status: **PARTIAL, EXACT RESET CERTIFIED**. The exact 5,147-bit reset-base
-CNF is independently certified UNSAT on compute and workspace surfaces. The
-exact state-step CNF has been emitted but has not yet been solved. Full formal
-equivalence is not claimed.
+CNF is independently certified UNSAT on compute and workspace surfaces. Two
+bounded strategies timed out on the exact state-step CNF, and a longer run is
+pending. Full formal equivalence is not claimed.
 
 ## Proof surface
 
@@ -87,9 +87,45 @@ CNF bytes   340131200
 CNF header  p cnf 3052420 8276177
 cmp bits    5147
 cmp map     855df0a4439e4840a21dac7843f8d07ca974026cf67e742561cd38e883f7ef35
-solver      NOT_RUN
+solver      CaDiCaL 1.7.3, UNKNOWN after two 600-second scouts
 certificate NONE
 ```
+
+Slurm job `5822` ran both strategies on
+`gpuorangefs-multi-r740-proxmox`. The `--unsat` lane reached 2,115,544
+conflicts and wrote a 769,118,281-byte partial DRAT; the `--plain` lane reached
+24,928 conflicts and wrote 63,697,365 bytes. Both traces were deleted because
+neither lane returned a result. No certificate or counterexample exists.
+
+## Exact consequent decomposition
+
+The fallback proof geometry retains the complete relation as the antecedent
+of every obligation and partitions only the next-step consequent:
+
+```text
+latches             2048  54a3e6384fb662a56e08e0b0d899d94d2ad7bcfc6fd44cfee79f4933e7b6b9e3
+accumulator         1024  0f3a495682f2ae93ef620ed30e229ad52239eccc06b244bc666a74b3c4c2d2b8
+product_and_alias   2048  7f4607dde489da1140c30ec205962baee8ba0441b6493237464d792cc6d94cf7
+control               27  d0f0885a182150eed6d1f5544105a071469c8bf75560cabc6390c0227a2efa61
+```
+
+The four sets are pairwise disjoint, sum to 5,147, and reproduce the full
+comparator-map hash. For each partition `X`, the intended certificate proves:
+
+```text
+UNSAT(T and P5147(t) and not P_X(t+1))
+```
+
+Yosys fixes the full `trigger` to zero at frame 1 and skips the partition
+asserts at that frame; the selected comparator asserts are proved only at
+frame 2. The quantified domain is arbitrary defined initial state plus shared
+defined inputs. No reachability or operand-domain assumption is added.
+
+Four independently replayed certificates imply the monolithic closure because
+the negation of the full consequent is the disjunction of failure in one of
+the four exact partitions. Geometry alone is not proof. Every promotion must
+bind the full map, partition map, generated recipe, temporal driver, CNF,
+solver binary, proof, checker binary, and independent replay hashes.
 
 ## Historical expanded-miter evidence
 
@@ -119,10 +155,12 @@ exactly the pinned 5,147-bit relation, both exact CNFs are deterministically
 emitted, and the current exact reset-base CNF is independently certified
 UNSAT.
 
-Not yet independently certified: the exact state-step CNF. Consequently,
+Not yet independently certified: the exact state-step CNF or any of its four
+exact consequent partitions. Consequently,
 temporal source-to-synthesized equivalence, arbitrary-initial-state
 equivalence, timing equivalence, and silicon equivalence remain unclaimed.
 
-The next run should scout and solve the current state-step CNF. Promotion
-requires solver `rc=20`, a completed proof hash, and `drat-trim` returning
-both `rc=0` and exactly `s VERIFIED` for that exact CNF.
+The monolithic long run and partitioned obligations are evidence-producing
+paths to the same state-step conclusion. Promotion requires solver `rc=20`, a
+completed proof hash, and `drat-trim` returning both `rc=0` and exactly one
+normalized `s VERIFIED` for each exact CNF used in the aggregate proof.

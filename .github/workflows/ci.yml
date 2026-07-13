@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
@@ -55,3 +56,17 @@ jobs:
           fi
           bash scripts/ci/postsynth_log_contract_test.sh
           bash scripts/ci/slurm_launcher_contract_test.sh
+
+  eisa-h-zd-formal-partition-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install formal surface tool
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends yosys
+      - name: Validate exact state-step partition geometry
+        run: |
+          bash -n scripts/gate_zd_pair_formal_partition_surface.sh
+          python3 -m py_compile tools/eisa_h/generate_state_partition_recipes.py tools/eisa_h/validate_formal_receipt.py
+          python3 tools/eisa_h/validate_formal_receipt.py . --contract-only
+          bash scripts/gate_zd_pair_formal_partition_surface.sh
