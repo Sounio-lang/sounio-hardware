@@ -13,6 +13,7 @@ Run the current gate with:
 ```sh
 bash scripts/gate_zd_pair_contract.sh
 bash scripts/gate_zd_pair_formal_partition_surface.sh
+bash scripts/slurm/run_zd_pair_formal_partition_emit.sh
 bash scripts/slurm/run_zd_pair_synth.sh
 ```
 
@@ -51,6 +52,9 @@ every sub-obligation and divides only the next-step consequent into four
 disjoint maps whose union is checked against the original map hash. This is a
 proof decomposition, not a weaker invariant. Full formal equivalence remains
 unclaimed until every partition CNF has an independently replayed certificate.
+The Slurm partition-emission launcher generates all four CNFs through the
+hash-bound temporal drivers, validates their DIMACS structure, and returns a
+complete checksummed bundle. Emission is not an UNSAT result.
 
 ## Ownership
 

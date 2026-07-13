@@ -16,7 +16,7 @@ def sha256(path: pathlib.Path) -> str:
 
 def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
     return {
-        "schema_version": 4,
+        "schema_version": 5,
         "formal_id": "eisa_h.sedenion_zd_pair.formal.v1",
         "rtl_implementation_id": "eisa_h.sedenion_zd_pair.rtl.v1",
         "source_rtl_sha256": sha256(root / "rtl/eisa_h_sed16_zd_pair_v1.sv"),
@@ -35,6 +35,12 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
             ),
             "partition_surface_gate_sha256": sha256(
                 root / "scripts/gate_zd_pair_formal_partition_surface.sh"
+            ),
+            "partition_emit_gate_sha256": sha256(
+                root / "scripts/gate_zd_pair_formal_partition_emit.sh"
+            ),
+            "partition_slurm_wrapper_sha256": sha256(
+                root / "scripts/slurm/run_zd_pair_formal_partition_emit.sh"
             ),
         },
         "post_synthesis_manifest_sha256": sha256(
@@ -132,6 +138,7 @@ def expected_manifest(root: pathlib.Path) -> dict[str, Any]:
                     "partition_cmp_map_sha256",
                     "generated_recipe_sha256",
                     "temporal_driver_sha256",
+                    "partition_emit_gate_sha256",
                     "cnf_sha256",
                     "solver_binary_sha256",
                     "proof_sha256",

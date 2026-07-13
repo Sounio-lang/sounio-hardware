@@ -193,3 +193,30 @@
   consensus.
 - Raw local results: `/tmp/llm-offload-rjc9Od/` and
   `/tmp/llm-offload-EaWas3/` (ephemeral).
+
+## 2026-07-13 - EISA-H partition CNF emission transport
+
+- Targets: partition emission gate, Slurm wrapper/routing, returned artifact
+  validation, and launcher contract fixtures.
+- Adversarial xAI review raised two relevant evidence-integrity requirements:
+  prove that the complete CNF dump precedes a bounded internal-solver timeout,
+  and reject semantically incomplete or internally inconsistent returned
+  bundles even when their outer transport checksum is self-consistent.
+- Resolution: every Yosys log must contain exactly one complete dump marker
+  before exactly one timeout-or-success outcome. The return validator requires
+  the exact 31-file artifact anatomy, rejects empty required files, and
+  independently verifies full coverage and every digest in the nested bundle
+  manifest. A read-only internal re-review then found and drove repairs for a
+  real marker/fixture mismatch, self-signed driver mutation, duplicate solver
+  outcomes, and unnormalized malformed gzip/JSON failures. Recipe and driver
+  identities are now pinned to the local schema-v5 formal contract. Negative
+  fixtures cover those cases plus a missing CNF, a missing bundle line, and
+  both top-level and nested digest mismatches; the launcher suite now passes
+  32 cases, including partial rc=1/42 returns, unexpected artifacts, semantic
+  manifest drift, and invalid or truncated gzip/DIMACS payloads.
+- Two other xAI findings were false positives against the actual diff: the
+  gate already rejected existing artifact directories before spawning work,
+  and all four writers already used distinct CNF, log, and artifact paths with
+  manifests created only after every child exited.
+- Claim boundary: emission remains distinct from UNSAT certification.
+- Raw local result: `/tmp/llm-offload-QA7mxI/` (ephemeral).

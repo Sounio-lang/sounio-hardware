@@ -9,6 +9,7 @@ GATE_ID="${EISA_H_GATE_ID:-synthesis}"
 case "$GATE_ID" in
   synthesis) DEFAULT_TIME_LIMIT="01:00:00" ;;
   formal) DEFAULT_TIME_LIMIT="00:30:00" ;;
+  formal-partition-emit) DEFAULT_TIME_LIMIT="00:45:00" ;;
   *) echo "SLURM_GATE_BLOCKED reason=unsupported_gate gate_id=$GATE_ID" >&2; exit 42 ;;
 esac
 TIME_LIMIT="${TIME_LIMIT:-$DEFAULT_TIME_LIMIT}"
@@ -199,6 +200,7 @@ gate_id=$(sed -n "s/^gate_id=//p" "$ROOT/request.txt")
 case "$gate_id" in
   synthesis) gate_script=scripts/gate_zd_pair_synth.sh ;;
   formal) gate_script=scripts/gate_zd_pair_formal.sh ;;
+  formal-partition-emit) gate_script=scripts/gate_zd_pair_formal_partition_emit.sh ;;
   *) exit 42 ;;
 esac
 mkdir -p "$ROOT/result"
@@ -217,6 +219,8 @@ printf "%s\n" \
 cd "$ROOT/repo"
 if [[ "$gate_id" == "formal" ]]; then
   export EISA_H_FORMAL_ARTIFACT_DIR="$ROOT/result/formal_artifacts"
+elif [[ "$gate_id" == "formal-partition-emit" ]]; then
+  export EISA_H_FORMAL_PARTITION_ARTIFACT_DIR="$ROOT/result/formal_artifacts"
 fi
 set +e
 bash "$gate_script" > "$ROOT/result/gate.log" 2>&1

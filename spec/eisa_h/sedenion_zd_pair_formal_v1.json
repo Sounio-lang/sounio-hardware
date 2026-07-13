@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "formal_id": "eisa_h.sedenion_zd_pair.formal.v1",
   "rtl_implementation_id": "eisa_h.sedenion_zd_pair.rtl.v1",
   "source_rtl_sha256": "90fc920d02eb9719fec3d63835e460bad8ce5636fc94002ff4620958b5b27157",
@@ -8,7 +8,9 @@
     "reset_base_sha256": "ed8f392741568b58018bbf9e8e7af8fdb677be124a57fb587a5e1731e1575905",
     "state_step_sha256": "ee6464ff452f90688976a03c750007645c8bc5f241f6cb166c716e565b0c4dc8",
     "partition_generator_sha256": "a33dd4b086ddcadc22eec8a80b75b39f897942689979372e83c104be0b90689a",
-    "partition_surface_gate_sha256": "bfdb04b726afa948b5ef49371d47c24453ddbb29cc6f77368524c56819747251"
+    "partition_surface_gate_sha256": "bfdb04b726afa948b5ef49371d47c24453ddbb29cc6f77368524c56819747251",
+    "partition_emit_gate_sha256": "8f43543c1534797e6fa6d4e060e34dc2f7d6301bbd4487bb13097c7c5ee1fc9e",
+    "partition_slurm_wrapper_sha256": "ab20f212675d90b35e2f1ddee59d7472cd54eb5ba7f28f8d0303d83ad354c030"
   },
   "post_synthesis_manifest_sha256": "ad5d0d825d8a4c6607d9f07cf056a5e7137a9f00605959f12dc3dfda250220c9",
   "tool": {
@@ -108,6 +110,7 @@
         "partition_cmp_map_sha256",
         "generated_recipe_sha256",
         "temporal_driver_sha256",
+        "partition_emit_gate_sha256",
         "cnf_sha256",
         "solver_binary_sha256",
         "proof_sha256",

@@ -37,3 +37,10 @@ replay.
 The decomposition does not establish state-step closure by itself. Aggregate
 promotion remains blocked until every partition has a replayed UNSAT
 certificate, or the monolithic exact CNF obtains one directly.
+
+The durable emission path runs through
+`scripts/slurm/run_zd_pair_formal_partition_emit.sh`. It transports the pinned
+commit and Yosys toolchain, executes all four temporal drivers, requires the
+complete-CNF marker to precede the solver outcome, validates each DIMACS file,
+and returns only an allowlisted, fully checksummed artifact tree. A successful
+emission run still carries no UNSAT claim.
