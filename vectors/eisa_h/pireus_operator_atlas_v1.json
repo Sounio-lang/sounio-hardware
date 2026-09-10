@@ -1,0 +1,99 @@
+{
+  "vector_set_id": "eisa_h.pireus_operator_atlas.v1.canonical",
+  "contract_id": "eisa_h.pireus_operator_atlas.v1",
+  "provenance": {
+    "note": "construction codes are a chosen spread over the bilinear grammar; every expectation is computed by this oracle's own reconstruction from arithmetic over F2^4, not transcribed from an upstream receipt"
+  },
+  "cases": [
+    {
+      "case_id": "construction-0x0000",
+      "construction_code": 0,
+      "expect": {
+        "quadratic_code": 0,
+        "affine_class": 0,
+        "novel_relative_to_v1_grammar": false
+      }
+    },
+    {
+      "case_id": "construction-0x0001",
+      "construction_code": 1,
+      "expect": {
+        "quadratic_code": 1,
+        "affine_class": 1,
+        "novel_relative_to_v1_grammar": false
+      }
+    },
+    {
+      "case_id": "construction-0x0002",
+      "construction_code": 2,
+      "expect": {
+        "quadratic_code": 16,
+        "affine_class": 4,
+        "novel_relative_to_v1_grammar": true
+      }
+    },
+    {
+      "case_id": "construction-0x000F",
+      "construction_code": 15,
+      "expect": {
+        "quadratic_code": 113,
+        "affine_class": 16,
+        "novel_relative_to_v1_grammar": true
+      }
+    },
+    {
+      "case_id": "construction-0x0110",
+      "construction_code": 272,
+      "expect": {
+        "quadratic_code": 48,
+        "affine_class": 4,
+        "novel_relative_to_v1_grammar": true
+      }
+    },
+    {
+      "case_id": "construction-0x1234",
+      "construction_code": 4660,
+      "expect": {
+        "quadratic_code": 242,
+        "affine_class": 24,
+        "novel_relative_to_v1_grammar": true
+      }
+    },
+    {
+      "case_id": "construction-0x4004",
+      "construction_code": 16388,
+      "expect": {
+        "quadratic_code": 544,
+        "affine_class": 16,
+        "novel_relative_to_v1_grammar": true
+      }
+    },
+    {
+      "case_id": "construction-0x8421",
+      "construction_code": 33825,
+      "expect": {
+        "quadratic_code": 15,
+        "affine_class": 3,
+        "novel_relative_to_v1_grammar": false
+      }
+    },
+    {
+      "case_id": "construction-0xBEEF",
+      "construction_code": 48879,
+      "expect": {
+        "quadratic_code": 575,
+        "affine_class": 30,
+        "novel_relative_to_v1_grammar": true
+      }
+    },
+    {
+      "case_id": "construction-0xFFFF",
+      "construction_code": 65535,
+      "expect": {
+        "quadratic_code": 15,
+        "affine_class": 3,
+        "novel_relative_to_v1_grammar": false
+      }
+    }
+  ]
+}

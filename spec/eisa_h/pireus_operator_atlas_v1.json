@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "contract_id": "eisa_h.pireus_operator_atlas.v1",
+  "purpose": "Independent reconstruction of the PIREUS bilinear-phase atlas and classification of an operator construction.",
+  "algebra": {
+    "base": "cayley-dickson-sedenion",
+    "dimension": 16,
+    "coordinate_field": "F2^4",
+    "phase_grammar": "bilinear",
+    "gauge": "basis-sign q:F2^4->F2 with q(0)=0, acting by delta q(i,j)=q(i)^q(j)^q(i^j)"
+  },
+  "declared": {
+    "bilinear_matrices": 65536,
+    "gauge_classes": 1024,
+    "gauge_class_size": 64,
+    "alternating_subspace_dimension": 6,
+    "class_invariant": "Q_B(x)=x^T B x, ten independent bits",
+    "span_dimension": 21,
+    "general_linear_group_order": 20160,
+    "admitted_without_operand_exchange": 168,
+    "admitted_with_operand_exchange": 168,
+    "affine_classes": 32,
+    "v1_grammar_classes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "atlas_sha256": "72f8f52bcc9732481bd6d79eede72cd05a9a870f2a2627bece2cdc5cb25d1af3"
+  },
+  "classification": {
+    "input": "one construction code in 0..65535",
+    "outputs": [
+      "quadratic_code",
+      "affine_class",
+      "novel_relative_to_v1_grammar"
+    ],
+    "novelty_rule": "an operator construction is novel relative to the v1 lowering grammar when its affine class is not among the classes that grammar reaches",
+    "tensor_provenance": "the tensor is derived from the construction; no tensor or hash is accepted from a proposer"
+  },
+  "classifications": [
+    "CLASSIFIED"
+  ],
+  "error_codes": [
+    "CODE_OUT_OF_RANGE",
+    "ATLAS_DIGEST_DRIFT",
+    "DECLARED_COUNT_MISMATCH"
+  ],
+  "receipt": {
+    "execution_surface": "software_oracle",
+    "required_identity_fields": [
+      "schema_sha256",
+      "contract_sha256",
+      "vectors_sha256",
+      "atlas_sha256"
+    ]
+  },
+  "claim_boundary": {
+    "establishes_class": true,
+    "establishes_novelty": false,
+    "establishes_performance": false,
+    "establishes_materialisability": false,
+    "statement": "locating a construction in the atlas establishes its equivalence class under the declared equivalence and nothing else; scientific novelty, material realisability and performance are separate obligations"
+  }
+}

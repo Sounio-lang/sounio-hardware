@@ -131,3 +131,47 @@ No performance, novelty, promotion, or correctness claim is made or transferred
 by this document. It records what two static audits observed, including where
 they could not decide. Any obligation upstream -- V13 and V14 formal parity
 among them -- remains exactly as open as it was before this file existed.
+
+## Addendum: the atlas is independently reproduced, and M5's classifier now exists
+
+The audit reported that M5 has mathematics upstream but no integration, and that
+one of the six missing pieces is an equivalence classifier: admission today
+reconstructs a tensor only to reject divergence from the canonical constant,
+where M5 needs the opposite -- accept a novel tensor and locate it.
+
+That piece is now built and verified, as `eisa_h.pireus_operator_atlas.v1`.
+
+Every count the upstream contract declares was reproduced from arithmetic over
+`F2^4`, by an implementation that reads no upstream receipt and trusts no
+upstream number:
+
+| Declared upstream | Reproduced |
+| --- | --- |
+| 65,536 bilinear matrices in 1,024 gauge classes of 64 | yes |
+| alternating subspace of dimension 6 | yes |
+| `Q_B(x) = x^T B x` is the complete class invariant, ten bits | yes |
+| bilinear-plus-coboundary span of dimension 21 | yes |
+| `|GL(4,2)| = 20,160`, 40,320 candidate actions | yes |
+| 168 admitted without operand exchange, 168 with, 336 total | yes |
+| the admitted affine action partitions 1,024 codes into 32 classes | yes |
+| the diagonal v1 grammar reaches exactly four of them | yes |
+
+The upstream numbers are correct. That is a finding in their favour, and it was
+worth establishing independently rather than assuming.
+
+The operative consequence for M5 is the last row. The v1 lowering grammar
+reaches four affine classes; the declared equivalence has thirty-two.
+**Twenty-eight affine classes are unreached by anything PIREUS has proposed so
+far.** That is where an operator search would have room the lowering grammar
+does not, and it is the concrete sense in which M4's `NO_GAIN` is a statement
+about the search space rather than about the model.
+
+Two disciplines are preserved by construction. The classifier takes a
+*construction code*, not a tensor: the tensor is derived, so the upstream rule
+that no tensor or hash is accepted from a proposer survives unchanged. And
+locating a construction in the atlas establishes its equivalence class and
+nothing else -- the contract refuses to establish scientific novelty,
+performance or material realisability, and the gate prints
+`novelty=NOT_ESTABLISHED` on every run.
+
+This does not integrate M5. It supplies one of its six missing pieces, verified.

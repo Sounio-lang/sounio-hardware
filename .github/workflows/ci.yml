@@ -25,6 +25,14 @@ jobs:
       - name: Verify PIREUS material-parity receipt admissibility contract
         run: bash scripts/gate_pireus_material_parity_contract.sh
 
+  eisa-h-pireus-operator-atlas-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct the PIREUS bilinear-phase atlas and verify its declared counts
+        run: bash scripts/gate_pireus_operator_atlas_contract.sh
+
   eisa-h-zd-rtl-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 5
