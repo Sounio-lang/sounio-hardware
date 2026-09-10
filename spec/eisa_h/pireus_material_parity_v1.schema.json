@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sounio.org/hardware/spec/eisa_h/pireus_material_parity_v1.schema.json",
+  "title": "EISA-H PIREUS material-parity receipt admissibility contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "purpose",
+    "authority",
+    "receipt_format",
+    "required_fields",
+    "invariants",
+    "forbidden_field_substrings",
+    "classifications",
+    "error_codes",
+    "receipt",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "contract_id": { "const": "eisa_h.pireus_material_parity.v1" },
+    "purpose": { "type": "string" },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producer_role", "semantic_authority_role", "semantic_authority_language", "rule"],
+      "properties": {
+        "producer_role": { "const": "MATERIAL_PARITY" },
+        "semantic_authority_role": { "const": "SEMANTIC_AUTHORITY" },
+        "semantic_authority_language": { "const": "Sounio" },
+        "rule": { "type": "string" }
+      }
+    },
+    "receipt_format": { "type": "object" },
+    "required_fields": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "invariants": { "type": "object" },
+    "forbidden_field_substrings": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "classifications": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["ACCEPTED_MATERIAL_PARITY", "OBSERVED_MISMATCH", "REJECTED_RECEIPT"] }
+    },
+    "error_codes": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "receipt": { "type": "object" },
+    "claim_boundary": { "type": "object" }
+  }
+}

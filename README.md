@@ -60,6 +60,17 @@ The 27-bit control partition now has a CaDiCaL UNSAT proof, an independent
 the audited gate. The other three partition certificates remain pending, so
 full state-step equivalence remains unclaimed.
 
+The PIREUS material-parity contract (`eisa_h.pireus_material_parity.v1`) decides
+whether a PIREUS material-parity receipt is admissible evidence of the
+measurement it reports. It validates receipt admissibility only: it does not
+re-run the measurement, does not touch hardware, and accepting a receipt asserts
+nothing about whether the measured result is correct, reproducible, or
+advantageous. Its refusals include a receipt whose mutation controls produced no
+mismatch, which measured nothing, and a receipt carrying any gain or promotion
+field, which is a separate obligation from parity.
+
+Run it with `bash scripts/gate_pireus_material_parity_contract.sh`.
+
 ## Ownership
 
 - `Sounio-lang/sounio` owns language-level semantics and cross-repository

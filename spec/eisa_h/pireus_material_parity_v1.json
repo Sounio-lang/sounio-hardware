@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "contract_id": "eisa_h.pireus_material_parity.v1",
+  "purpose": "Admissibility of a PIREUS material-parity receipt as hardware evidence.",
+  "authority": {
+    "producer_role": "MATERIAL_PARITY",
+    "semantic_authority_role": "SEMANTIC_AUTHORITY",
+    "semantic_authority_language": "Sounio",
+    "rule": "the producer measures and never defines; a receipt asserting its own semantic authority is refused"
+  },
+  "receipt_format": {
+    "encoding": "flat-key-value-utf8",
+    "separator": "=",
+    "duplicate_keys": "refused"
+  },
+  "required_fields": [
+    "producer_language",
+    "producer_role",
+    "semantic_authority_language",
+    "semantic_authority_role",
+    "source_semantics_sha256",
+    "target",
+    "rounding_mode",
+    "flush_to_zero",
+    "denormals_are_zero",
+    "dimension",
+    "partner_cells",
+    "partner_failures",
+    "negative_cells",
+    "positive_cells",
+    "vector_matching_lanes",
+    "vector_mismatching_lanes",
+    "vector_first_mismatch",
+    "sign_mutation_mismatching_lanes",
+    "selector_mutation_mismatching_lanes",
+    "ascending_i",
+    "reassociated",
+    "claim_ready",
+    "generic_cost_claim",
+    "result"
+  ],
+  "invariants": {
+    "cell_conservation": "positive_cells + negative_cells == dimension^2 and partner_cells + partner_failures == dimension^2",
+    "parity_consistency": "result=PASS requires vector_mismatching_lanes == 0, vector_first_mismatch == -1 and partner_failures == 0",
+    "mutation_controls_must_fire": "sign_mutation_mismatching_lanes > 0 and selector_mutation_mismatching_lanes > 0",
+    "evaluation_order": "ascending_i == true and reassociated == false",
+    "numeric_environment": "rounding_mode == FE_TONEAREST, flush_to_zero == false, denormals_are_zero == false",
+    "claim_boundary": "claim_ready == false and generic_cost_claim == false",
+    "no_gain_in_parity_receipt": "a parity receipt carries no gain, speedup, timing or promotion field"
+  },
+  "forbidden_field_substrings": [
+    "gain",
+    "speedup",
+    "promotion",
+    "median_ppm",
+    "eligible"
+  ],
+  "classifications": [
+    "ACCEPTED_MATERIAL_PARITY",
+    "OBSERVED_MISMATCH",
+    "REJECTED_RECEIPT"
+  ],
+  "error_codes": [
+    "MISSING_REQUIRED_FIELD",
+    "DUPLICATE_FIELD",
+    "MALFORMED_VALUE",
+    "PRODUCER_CLAIMS_AUTHORITY",
+    "VACUOUS_MUTATION_CONTROL",
+    "PARITY_INCONSISTENT_WITH_RESULT",
+    "CELL_COUNT_INCONSISTENT",
+    "EVALUATION_ORDER_MODIFIED",
+    "NUMERIC_ENVIRONMENT_MODIFIED",
+    "UNSUPPORTED_CLAIM_PROMOTION",
+    "GAIN_CLAIM_IN_PARITY_RECEIPT"
+  ],
+  "receipt": {
+    "execution_surface": "software_oracle",
+    "validates": "receipt_admissibility_only",
+    "required_identity_fields": [
+      "schema_sha256",
+      "contract_sha256",
+      "vectors_sha256",
+      "receipt_sha256"
+    ]
+  },
+  "claim_boundary": {
+    "measures_hardware": false,
+    "establishes_parity": false,
+    "establishes_gain": false,
+    "statement": "accepting a receipt asserts that it is admissible evidence of the measurement it reports, not that the measurement is correct, reproducible, or advantageous"
+  }
+}

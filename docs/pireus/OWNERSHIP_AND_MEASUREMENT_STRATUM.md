@@ -69,3 +69,27 @@ Observed in `Sounio-lang/sounio` on 2026-09-10:
 
 These are observations of upstream state. They are recorded because they bound
 what this repository can verify locally, and for no other purpose.
+
+## Addendum, 2026-09-10: the contract exists, and the boundary moved
+
+`eisa_h.pireus_material_parity.v1` is implemented: contract, schema, oracle,
+14 adversarial vectors, mutation self-test and gate. It is a native EISA-H
+contract, not a port. See `docs/pireus/UPSTREAM_AUDIT_2026-09-10.md` for why
+porting was abandoned: 24 of roughly 5,500 upstream files could migrate, the
+dominant coupling is the Loom Guardian rather than the compiler, and the
+harnesses without their gates would carry no evidentiary value.
+
+The contract therefore validates *receipt admissibility*, which is the part this
+repository can own without depending on Sounio. Two of its refusals are the
+substance rather than bookkeeping:
+
+- a receipt whose sign or selector mutation control produced zero mismatches is
+  refused as `VACUOUS_MUTATION_CONTROL`; a parity test whose negative controls
+  do not fire measured nothing;
+- a receipt carrying any gain, speedup, promotion, median-ppm or eligibility
+  field is refused as `GAIN_CLAIM_IN_PARITY_RECEIPT`. Bit-exact parity and
+  timing gain are separate obligations, and the upstream audit found that
+  conflating them is where the M4 result became hard to read.
+
+This claims no hardware measurement. The gate reports
+`hardware=NOT_MEASURED` on every run.

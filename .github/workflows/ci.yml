@@ -17,6 +17,14 @@ jobs:
       - name: Verify ordered sedenion zero-divisor contract
         run: bash scripts/gate_zd_pair_contract.sh
 
+  eisa-h-pireus-material-parity-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify PIREUS material-parity receipt admissibility contract
+        run: bash scripts/gate_pireus_material_parity_contract.sh
+
   eisa-h-zd-rtl-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 5
