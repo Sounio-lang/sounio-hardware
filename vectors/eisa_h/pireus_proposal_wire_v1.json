@@ -1,0 +1,194 @@
+{
+  "contract_id": "eisa_h.pireus_proposal_wire.v1",
+  "provenance": "Documents are constructed here. The v1 language they exercise was transcribed from tools/pireus/continuity/admission.sio by reading, not by executing it.",
+  "cases": [
+    {
+      "case_id": "v1_canonical",
+      "note": "The kind=1 lowering proposal the continuity loop already sends.",
+      "kind": 1,
+      "expect_accepted": true,
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    },
+    {
+      "case_id": "v2_canonical",
+      "note": "The kind=2 operator proposal, adding exactly one key: the 16-bit phase code.",
+      "kind": 2,
+      "expect_accepted": true,
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"phase\":1128}"
+    },
+    {
+      "case_id": "v1_whitespace_tolerated",
+      "note": "Space, tab, LF and CR are skipped around structural tokens (admission.sio:32).",
+      "kind": 1,
+      "expect_accepted": true,
+      "document": "{ \"schema\" : 1 ,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    },
+    {
+      "case_id": "v2_phase_zero_accepted_by_wire",
+      "note": "Phase code 0 is well-formed on the wire. It is the admission contract, not the parser, that refuses it for lacking novelty -- the two obligations stay separate.",
+      "kind": 2,
+      "expect_accepted": true,
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"phase\":0}"
+    },
+    {
+      "case_id": "v1_rejects_the_extra_key",
+      "note": "A 17-key document under the v1 key set. It fails by falling out of the bounded loop, not on an unknown key -- which is why extending the language means raising the loop bound, not only adding a name.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"phase\":1128}"
+    },
+    {
+      "case_id": "v2_missing_phase",
+      "note": "A kind=2 proposal without its phase code carries no operator.",
+      "kind": 2,
+      "expect_accepted": false,
+      "expect_reason_prefix": "SEEN_MASK",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    },
+    {
+      "case_id": "v2_phase_out_of_range",
+      "note": "The phase code space is exactly 2^16.",
+      "kind": 2,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PHASE_RANGE",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"phase\":65536}"
+    },
+    {
+      "case_id": "reject_duplicate_key",
+      "note": "admission.sio:71 -- a repeated key is refused rather than last-wins.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"schema\":1}"
+    },
+    {
+      "case_id": "reject_uppercase_key",
+      "note": "admission.sio:52 -- keys are lowercase and underscore only.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"Schema\":1}"
+    },
+    {
+      "case_id": "reject_unknown_key",
+      "note": "No key outside the table is accepted.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"phase_code\":1}"
+    },
+    {
+      "case_id": "reject_leading_zero",
+      "note": "admission.sio:102 -- a leading zero is refused, so one integer has one encoding.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":01,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    },
+    {
+      "case_id": "reject_ten_digit_value",
+      "note": "admission.sio:97 -- values are bounded at nine digits.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":1234567890,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    },
+    {
+      "case_id": "reject_negative_value",
+      "note": "The parser reads digits only; there is no sign, so the wire carries no negative.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":-1,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    },
+    {
+      "case_id": "reject_trailing_comma",
+      "note": "A comma must be followed by a key.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",}"
+    },
+    {
+      "case_id": "reject_trailing_content",
+      "note": "admission.sio:108 -- only whitespace may follow the closing brace.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"} x"
+    },
+    {
+      "case_id": "reject_short_context",
+      "note": "admission.sio:83 -- the context digest is exactly 64 hex characters.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}"
+    },
+    {
+      "case_id": "reject_uppercase_context",
+      "note": "admission.sio:86 -- lowercase hex only, so one digest has one encoding.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}"
+    },
+    {
+      "case_id": "reject_context_unquoted",
+      "note": "The context is the one string-valued key.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":0}"
+    },
+    {
+      "case_id": "reject_oversized_document",
+      "note": "admission.sio:170 -- documents are bounded at 4096 bytes.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schema\":1,\"target\":00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000}"
+    },
+    {
+      "case_id": "reject_non_ascii",
+      "note": "Strings are byte-indexed; a multi-byte character breaks the length invariant.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{\"schem\u00e1\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    },
+    {
+      "case_id": "reject_context_only_field_override",
+      "note": "Fields 6, 7 and 8 belong to the context. A proposal that sets its own capabilities is refused.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "SEEN_MASK",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"capabilities\":63,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    },
+    {
+      "case_id": "reject_empty_object",
+      "note": "An empty object names no proposal.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "{}"
+    },
+    {
+      "case_id": "reject_not_an_object",
+      "note": "The document must be an object.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "PROPOSAL_FORMAT",
+      "document": "\"schema\""
+    },
+    {
+      "case_id": "reject_kind_mismatch",
+      "note": "A document declaring kind=2 routed through the v1 key set.",
+      "kind": 1,
+      "expect_accepted": false,
+      "expect_reason_prefix": "KIND",
+      "document": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":0,\"layout\":0,\"unroll\":1,\"context\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+    }
+  ]
+}

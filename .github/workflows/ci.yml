@@ -49,6 +49,14 @@ jobs:
       - name: Materialise a kind=2 operator twice and compare bit for bit
         run: bash scripts/gate_pireus_operator_self_parity_contract.sh
 
+  eisa-h-pireus-proposal-wire-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pin the proposal wire format and the kind=2 extension it needs
+        run: bash scripts/gate_pireus_proposal_wire_contract.sh
+
   eisa-h-zd-rtl-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 5
