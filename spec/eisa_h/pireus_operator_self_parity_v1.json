@@ -1,0 +1,60 @@
+{
+  "contract_id": "eisa_h.pireus_operator_self_parity.v1",
+  "title": "PIREUS kind=2 operator material self-parity",
+  "purpose": "Measure that two independent materialisations of a proposed novel operator are the same function, bit for bit, on the hardware that ran them.",
+  "why_this_exists": "eisa_h.pireus_operator_admission.v1 admits a kind=2 proposal on recomputed algebraic invariants and then names an open obligation: the material acceptance criterion. Bit-exact parity against a reference is inapplicable because a newly proposed operator has no reference. This contract closes that obligation with the substitute it proposed -- self-parity between two derivations -- and moves it from proposed to measured.",
+  "method": {
+    "reference_path": "Recomputes the structure coefficient from the phase code on every term, through the Cayley-Dickson recursion and the bilinear form, and indexes by a direct XOR.",
+    "lowered_path": "Reads the coefficient from a packed sign table, loads operands into lane space through the strided permutation, and stores results back through its inverse, as the emitted lowering does.",
+    "shared_accumulation_order": "Both paths accumulate each output in ascending right-operand order. Letting the orders differ would measure numerical stability under reassociation, which is a different question; the frozen semantics fix the order and forbid reassociation, so a divergence here can only be a sign-table or lane-map error."
+  },
+  "controls": {
+    "rationale": "A self-parity probe whose mutations are inert proves nothing: two paths that are secretly the same code agree trivially. Every control below must be shown to fire.",
+    "sign_table": "Flipping one packed sign must break parity.",
+    "lane_map": "Desynchronising the store lane map from the load lane map must break parity. Renaming both consistently is not a control, because no arithmetic could detect it; the mutation models the bug a lane-map error actually is.",
+    "twist_drop": "Lowering cd_sigma in place of the twisted product must break parity exactly when the twist is non-trivial. This is the control that proves the probe measured the proposed operator rather than silently falling back to the Cayley-Dickson base it extends. On phase code 0 it must stay inert, because there the twist is the identity."
+  },
+  "declared": {
+    "dimension": 16,
+    "precision": 64,
+    "reference_phase_code": 1128,
+    "reference_phase_code_provenance": "The operator the upstream genesis run selected (selected_matrix=1128), independently reproduced by eisa_h.pireus_operator_admission.v1.",
+    "operands": "Deterministic bit patterns from a fixed mixing function, never a PRNG, bounded into [-2, 2) so no term is denormal or infinite and every mismatch is a real disagreement rather than a trap.",
+    "required_fields": [
+      "schema", "producer_role", "semantic_authority_language", "kind",
+      "phase_code", "lane_stride", "lane_offset", "dimension", "precision",
+      "trials", "reference_derivation", "lowered_derivation",
+      "shared_accumulation_order", "reassociated", "fma_contracted",
+      "rounding_mode", "flush_to_zero", "denormals_are_zero",
+      "mismatching_lanes", "first_mismatch", "sign_mutation_mismatching_lanes",
+      "lane_mutation_mismatching_lanes", "twist_drop_mutation_mismatching_lanes",
+      "twist_is_trivial", "establishes", "claim_ready", "fp_utility", "result"
+    ],
+    "forbidden_field_substrings": [
+      "gain", "speedup", "promotion", "median_ppm", "eligible",
+      "faster", "throughput", "elapsed", "nanosecond", "cycles_per"
+    ]
+  },
+  "invariants": {
+    "check_order": "The forbidden-substring scan runs before any field is read. The claim boundary is the outer obligation.",
+    "derivations_must_differ": "reference_derivation != lowered_derivation, or the comparison is vacuous.",
+    "controls_must_fire": "sign_mutation_mismatching_lanes > 0 and lane_mutation_mismatching_lanes > 0.",
+    "twist_control_is_conditional": "twist_drop_mutation_mismatching_lanes > 0 exactly when phase_code != 0, and twist_is_trivial must agree with that.",
+    "numeric_environment": "rounding_mode FE_TONEAREST; reassociated, fma_contracted, flush_to_zero and denormals_are_zero all false.",
+    "parity_consistency": "result PASS requires mismatching_lanes == 0 and first_mismatch == -1.",
+    "no_timing_in_a_parity_receipt": "A parity receipt carries no gain, speedup, promotion or timing field."
+  },
+  "claim_boundary": {
+    "establishes_material_self_parity": true,
+    "establishes_utility": false,
+    "establishes_performance": false,
+    "establishes_scientific_novelty": false,
+    "establishes_portability": false,
+    "note": "Agreement means two materialisations of one operator are the same function on the host that ran them. It does not mean the operator is useful, is fast, or materialises the same way on any other hardware. A single host is one observation, not a portability claim."
+  },
+  "open_obligations": {
+    "vector_and_gpu_lowerings": "Only the scalar lane-space lowering is compared. The AVX-512 and GPU paths the upstream lowering emits are not exercised here.",
+    "cross_host": "Measured on one host per CI run. Nothing here establishes agreement across microarchitectures.",
+    "formal_v13_v14": "OPEN, unchanged."
+  }
+}
