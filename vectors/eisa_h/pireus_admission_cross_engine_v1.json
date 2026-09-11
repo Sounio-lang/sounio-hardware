@@ -1,0 +1,88 @@
+{
+ "cases": [
+  {
+   "case_id": "lowering-kind1",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"lowering\",\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"6afd9bdb6593d7283fb6cc01bc7d2c58d35e6de843c011cdca3d07233c63be29\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"1787a5a73ccfc77b7b8fc677cdee33a429a65d950b795ef3ae7bfba4270b4219\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "1787a5a73ccfc77b7b8fc677cdee33a429a65d950b795ef3ae7bfba4270b4219",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":1,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\"}\n"
+  },
+  {
+   "case_id": "operator-phase-0",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":0,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"6afd9bdb6593d7283fb6cc01bc7d2c58d35e6de843c011cdca3d07233c63be29\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"7cb53d8077d385fedc4f15ea455b22e603fdc7b891fc5e0442261312265b5a25\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "7cb53d8077d385fedc4f15ea455b22e603fdc7b891fc5e0442261312265b5a25",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":0}\n"
+  },
+  {
+   "case_id": "operator-phase-1128",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":1128,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"60cffb22d852fefa154fd8c2c9bb5a39c58ae89605b88881ff39dd54ed34387d\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"304514a0d58b16dcfc30c12c136898af3c6e5cba0534ac97eb9ee310faecdcac\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "304514a0d58b16dcfc30c12c136898af3c6e5cba0534ac97eb9ee310faecdcac",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":1128}\n"
+  },
+  {
+   "case_id": "operator-phase-2",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":2,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"43546423d27e65321db62fffdec41fc41b59ccf2b8c65a788b813639da0834b1\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"223dfd33300badf0950726b6f350b128efd7853932747a4531b16a4c2c552e3f\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "223dfd33300badf0950726b6f350b128efd7853932747a4531b16a4c2c552e3f",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":2}\n"
+  },
+  {
+   "case_id": "operator-phase-8",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":8,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"64919189c0e50f198c5962e86c49753144d617b2f800e398617219093eedb9f1\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"5baf724910fcfd453cb803149ab3d6e2ff0b09096b3127beb429663e84e98bd6\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "5baf724910fcfd453cb803149ab3d6e2ff0b09096b3127beb429663e84e98bd6",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":8}\n"
+  },
+  {
+   "case_id": "operator-phase-74",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":74,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"83fb5c33618bc4f4b7bf7294036e275ffe61fa4115a7a9122b480e111d9214d4\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"52f8ba398d00b53a6272333a4e39eaaf41f5a2167bcf889d9b094ee43f5787ba\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "52f8ba398d00b53a6272333a4e39eaaf41f5a2167bcf889d9b094ee43f5787ba",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":74}\n"
+  },
+  {
+   "case_id": "operator-phase-198",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":198,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"1415e3e92b2b91d688c5cf31fbd77db8e009d740c770b983351850a4fcc3bd53\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"00976a1425bfaae1bf5d3b5a2a39c41b9523634e85ce35dfae36101c274a05b3\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "00976a1425bfaae1bf5d3b5a2a39c41b9523634e85ce35dfae36101c274a05b3",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":198}\n"
+  },
+  {
+   "case_id": "operator-phase-1129",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":1129,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"934682e0837c1b8b0345cf9b8560e6ab0114716db99b552e28ecb2f734017f92\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"6ae6eaa6faf09093de06b71be8df047634f4ed4e094e759694b966ef0d194959\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "6ae6eaa6faf09093de06b71be8df047634f4ed4e094e759694b966ef0d194959",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":1129}\n"
+  },
+  {
+   "case_id": "operator-phase-4",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":4,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"286b75e6d0922dd3ee1694f55031a03c495d69b150507a81769170b7bbf5c2f1\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"965a0df97c3969cc4cacdc65115460555bb470a769ca310e8db9b4730154d3b6\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "965a0df97c3969cc4cacdc65115460555bb470a769ca310e8db9b4730154d3b6",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":4}\n"
+  },
+  {
+   "case_id": "operator-phase-16",
+   "engine_exit_code": 0,
+   "engine_stdout": "{\"schema\":1,\"authority\":\"Sounio\",\"decision\":\"ADMIT\",\"kind\":\"operator\",\"phase_code\":16,\"plan_id\":2113,\"tensor_components\":4096,\"tensor_encoding\":\"cd16-abk-offset1-v1\",\"tensor_sha256\":\"82ab04b1e76e11eb4f104b73cdffb9f1b5fac74317779738f408f8835f61611c\",\"context_sha256\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"proposal_sha256\":\"3b7560dc32fd2ca98a7c63143538bd07e33d87a68ffea61a82f8f2693c50d6ca\",\"novelty\":\"NOT_CLASSIFIED\",\"classifier\":\"eisa_h.pireus_operator_atlas.v1\",\"fp_parity\":\"UNMEASURED\",\"claim_ready\":false,\"formal_v13_v14\":\"OPEN\"}\n",
+   "proposal_sha256": "3b7560dc32fd2ca98a7c63143538bd07e33d87a68ffea61a82f8f2693c50d6ca",
+   "proposal_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"kind\":2,\"lane_stride\":1,\"lane_offset\":0,\"load\":1,\"layout\":0,\"unroll\":1,\"context\":\"c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb\",\"phase\":16}\n"
+  }
+ ],
+ "contract_id": "eisa_h.pireus_admission_cross_engine.v1",
+ "provenance": {
+  "compiled_by": "./bin/souc (committed Madaros ELF, md5=92f2c566)",
+  "context_sha256": "c49450650ce3fbfff081fb9bf6da128302fba639b3b1a011f22455a0d3bcbfdb",
+  "context_wire": "{\"schema\":1,\"target\":701202,\"dimension\":16,\"precision\":64,\"order\":1,\"fma\":0,\"capabilities\":55,\"lane_width\":32,\"facts_state\":1}\n",
+  "engine_elf_bytes": 112047,
+  "engine_source": "tools/pireus/continuity/admission.sio (Sounio-lang/sounio)",
+  "engine_source_commit": "ec095180de511263a9e45205d3460b28d9ae0de7",
+  "engine_source_sha256": "b0b9e880f1723fe1ed83137edf0fe82976e1b024503b799293ff461540d3a975",
+  "receipts_are": "recorded verbatim from one execution; this gate does not run Sounio",
+  "recorded": "2026-09-11",
+  "reproduced_by": "bash scripts/ci/pireus_admission_engine_gate.sh in the sounio repository"
+ },
+ "schema_version": 1
+}

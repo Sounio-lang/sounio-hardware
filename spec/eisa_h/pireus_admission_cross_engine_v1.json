@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "contract_id": "eisa_h.pireus_admission_cross_engine.v1",
+  "purpose": "Independent re-derivation of the structure-tensor digests that the Sounio admission engine asserts in its receipts.",
+  "provenance": {
+    "executed_against_admission_sio": true,
+    "engine_source": "tools/pireus/continuity/admission.sio (Sounio-lang/sounio)",
+    "engine_source_sha256": "b0b9e880f1723fe1ed83137edf0fe82976e1b024503b799293ff461540d3a975",
+    "engine_source_commit": "ec095180de511263a9e45205d3460b28d9ae0de7",
+    "compiled_by": "./bin/souc",
+    "recorded": "2026-09-11",
+    "note": "the receipts in the vectors are recorded verbatim from that execution; this contract re-derives every digest they assert and runs no Sounio"
+  },
+  "algebra": {
+    "base": "cayley-dickson-sedenion",
+    "dimension": 16,
+    "coordinate_field": "F2^4",
+    "phase_grammar": "bilinear",
+    "structure_sign": "sigma_B(a,b) = cd_sigma(a,b) * (-1)^(a^T B b)"
+  },
+  "encoding": {
+    "name": "cd16-abk-offset1-v1",
+    "order": "a,b,k ascending",
+    "coefficient_bytes": 1,
+    "offset": "-1,0,+1 map to 0,1,2",
+    "blocks": 16,
+    "block_bytes": 256,
+    "digest": "sha256 over the 16 blocks in order"
+  },
+  "declared": {
+    "recorded_receipts": 10,
+    "operator_receipts": 9,
+    "distinct_operator_tensors": 9,
+    "tensor_components": 4096,
+    "phase_code_space": 65536,
+    "cayley_dickson_tensor_sha256": "6afd9bdb6593d7283fb6cc01bc7d2c58d35e6de843c011cdca3d07233c63be29"
+  },
+  "obligations": [
+    "RECEIPT_WELL_FORMED",
+    "PROPOSAL_BINDING",
+    "PHASE_CODE_INJECTIVE",
+    "CROSS_ENGINE_TENSOR_IDENTITY",
+    "PHASE_ZERO_RECOVERS_CAYLEY_DICKSON",
+    "NOVELTY_UNDISCHARGED"
+  ],
+  "error_codes": [
+    "CROSS_ENGINE_DIVERGENCE",
+    "PROPOSAL_BINDING_BROKEN",
+    "PHASE_CODE_NOT_RECOVERABLE",
+    "NOVELTY_PRE_DISCHARGED",
+    "DECLARED_COUNT_MISMATCH",
+    "ENGINE_IDENTITY_MISMATCH"
+  ],
+  "receipt": {
+    "execution_surface": "software_oracle_over_recorded_engine_receipts",
+    "required_identity_fields": [
+      "schema_sha256",
+      "contract_sha256",
+      "vectors_sha256"
+    ]
+  },
+  "claim_boundary": {
+    "establishes_cross_implementation_agreement": true,
+    "establishes_engine_correctness": false,
+    "establishes_novelty": false,
+    "establishes_performance": false,
+    "establishes_materialisability": false,
+    "establishes_floating_point_parity": false,
+    "statement": "two independent implementations agreeing on a 4096-coefficient object is evidence that a receipt names the operator it admitted; it is not evidence that either implementation is correct, and nothing here was measured on hardware"
+  }
+}

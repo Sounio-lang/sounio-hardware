@@ -65,6 +65,14 @@ jobs:
       - name: Verify the kind=2 admission patch against its declared edit set
         run: bash scripts/gate_pireus_admission_patch_contract.sh
 
+  eisa-h-pireus-admission-cross-engine-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Re-derive the tensor digests the Sounio admission engine asserted
+        run: bash scripts/gate_pireus_admission_cross_engine_contract.sh
+
   eisa-h-zd-rtl-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 5

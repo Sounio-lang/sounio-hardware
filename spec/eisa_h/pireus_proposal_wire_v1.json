@@ -7,9 +7,10 @@
     "derived_by": "source_reading",
     "source": "tools/pireus/continuity/admission.sio in Sounio-lang/sounio",
     "executed_against_admission_sio": false,
-    "why_not": "This environment cannot build bin/souc: gen2 self-compilation measured 27,294,756 KiB maximum child RSS on Slurm job 11991 and the container has 15 GiB. The v1 rules are therefore a claim about admission.sio that a compiler owner must confirm, not a measurement of it.",
+    "why_not": "This gate re-derives the v1 rules from admission.sio's text; it does not run the engine, so nothing here is a measurement of it. An earlier version of this field gave a different reason -- that the environment could not build a compiler at all, citing 27,294,756 KiB maximum child RSS for gen2 self-compilation against 15 GiB of container memory. That was wrong, and wrong in a way that kept the authority unexecuted: bin/souc is a committed binary, needs no bootstrap, and compiles admission.sio in about three seconds. The rules below were subsequently confirmed against a compiled engine.",
     "how_to_confirm": "Every rule carries the admission.sio line it came from, so confirmation is a reading task rather than an investigation.",
-    "authority": "admission.sio is the authority. A disagreement between it and this contract is a defect in this contract until proven otherwise."
+    "authority": "admission.sio is the authority. A disagreement between it and this contract is a defect in this contract until proven otherwise.",
+    "confirmed_against_compiled_engine": "eisa_h.pireus_admission_cross_engine.v1 (this repository) records receipts from a compiled admission.sio; scripts/ci/pireus_admission_engine_gate.sh in Sounio-lang/sounio compiles and interrogates it on every run."
   },
   "declared": {
     "v1_keys": [
