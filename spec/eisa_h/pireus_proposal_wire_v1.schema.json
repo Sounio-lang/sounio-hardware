@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "eisa_h.pireus_proposal_wire.v1 contract",
+  "type": "object",
+  "required": ["contract_id", "title", "purpose", "why_this_exists",
+               "provenance", "declared", "language", "extension",
+               "invariants", "claim_boundary"],
+  "properties": {
+    "contract_id": { "const": "eisa_h.pireus_proposal_wire.v1" },
+    "provenance": {
+      "type": "object",
+      "required": ["derived_by", "source", "executed_against_admission_sio",
+                   "why_not", "how_to_confirm", "authority"],
+      "properties": {
+        "derived_by": { "const": "source_reading" },
+        "executed_against_admission_sio": { "const": false }
+      }
+    },
+    "declared": {
+      "type": "object",
+      "required": ["v1_keys", "v2_added_key", "v2_added_key_index",
+                   "v1_proposal_seen_mask", "v2_proposal_seen_mask",
+                   "context_key_index", "context_hex_length",
+                   "max_document_bytes", "max_value_digits"]
+    },
+    "extension": {
+      "type": "object",
+      "required": ["principle", "why_a_17th_key_fails_today", "required_edits",
+                   "no_struct_change_needed", "not_in_scope"]
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": ["establishes_wire_admissibility",
+                   "establishes_correspondence_with_admission_sio",
+                   "establishes_semantic_admission"],
+      "properties": {
+        "establishes_correspondence_with_admission_sio": { "const": false },
+        "establishes_semantic_admission": { "const": false }
+      }
+    }
+  }
+}

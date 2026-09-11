@@ -17,6 +17,62 @@ jobs:
       - name: Verify ordered sedenion zero-divisor contract
         run: bash scripts/gate_zd_pair_contract.sh
 
+  eisa-h-pireus-material-parity-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify PIREUS material-parity receipt admissibility contract
+        run: bash scripts/gate_pireus_material_parity_contract.sh
+
+  eisa-h-pireus-operator-atlas-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct the PIREUS bilinear-phase atlas and verify its declared counts
+        run: bash scripts/gate_pireus_operator_atlas_contract.sh
+
+  eisa-h-pireus-operator-admission-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Admit a kind=2 operator-genesis proposal only on recomputed invariants
+        run: bash scripts/gate_pireus_operator_admission_contract.sh
+
+  eisa-h-pireus-operator-self-parity-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Materialise a kind=2 operator twice and compare bit for bit
+        run: bash scripts/gate_pireus_operator_self_parity_contract.sh
+
+  eisa-h-pireus-proposal-wire-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pin the proposal wire format and the kind=2 extension it needs
+        run: bash scripts/gate_pireus_proposal_wire_contract.sh
+
+  eisa-h-pireus-admission-patch-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the kind=2 admission patch against its declared edit set
+        run: bash scripts/gate_pireus_admission_patch_contract.sh
+
+  eisa-h-pireus-admission-cross-engine-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Re-derive the tensor digests the Sounio admission engine asserted
+        run: bash scripts/gate_pireus_admission_cross_engine_contract.sh
+
   eisa-h-zd-rtl-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 5

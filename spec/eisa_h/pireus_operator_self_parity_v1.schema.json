@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "eisa_h.pireus_operator_self_parity.v1 contract",
+  "type": "object",
+  "required": ["contract_id", "title", "purpose", "why_this_exists", "method",
+               "controls", "declared", "invariants", "claim_boundary",
+               "open_obligations"],
+  "properties": {
+    "contract_id": { "const": "eisa_h.pireus_operator_self_parity.v1" },
+    "declared": {
+      "type": "object",
+      "required": ["dimension", "precision", "reference_phase_code",
+                   "required_fields", "forbidden_field_substrings"],
+      "properties": {
+        "dimension": { "const": 16 },
+        "precision": { "const": 64 },
+        "reference_phase_code": { "type": "integer", "minimum": 0, "maximum": 65535 }
+      }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": ["establishes_material_self_parity", "establishes_utility",
+                   "establishes_performance", "establishes_scientific_novelty",
+                   "establishes_portability"],
+      "properties": {
+        "establishes_utility": { "const": false },
+        "establishes_performance": { "const": false },
+        "establishes_scientific_novelty": { "const": false },
+        "establishes_portability": { "const": false }
+      }
+    }
+  }
+}

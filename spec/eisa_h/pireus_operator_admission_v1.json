@@ -1,0 +1,70 @@
+{
+  "contract_id": "eisa_h.pireus_operator_admission.v1",
+  "title": "PIREUS kind=2 operator-genesis admission",
+  "purpose": "Decide whether a proposed novel bilinear-phase operator over the sed16 XOR grading is admissible. Supplies the acceptance criterion that bit-exact parity cannot supply, because a newly proposed operator has no reference to be parity-checked against.",
+  "why_this_exists": "The kind=1 continuity path admits a lowering of a fixed operator and accepts it only on bit-exact parity with cd_sigma. admission.sio refuses every proposal whose kind is not 1, so the operator-genesis mathematics upstream has no path into the continuity loop. That refusal is correct as written: without a substitute criterion, admitting kind=2 would widen the funnel into claims nothing can falsify. This contract is the substitute criterion.",
+  "admission_criteria": {
+    "well_defined": "All 4096 structure coefficients reconstruct from the phase code through the declared lane map and agree with the twisted product. The proposer supplies a 16-bit phase code and nothing else that is load-bearing; no tensor and no digest is accepted on the proposer's word.",
+    "novel": "The construction's affine class under the 336 admitted actions is not one of the four the v1 diagonal grammar already reaches. This makes novelty a decidable predicate rather than an adjective.",
+    "characterised": "Every declared algebraic invariant is recomputed by exhaustive enumeration and must agree exactly. A proposal that misdescribes the algebra it built is refused even when the algebra itself is sound.",
+    "bounded": "The receipt carries no performance field, keeps fp_parity UNMEASURED, claim_ready false, and the V13/V14 formal obligations OPEN."
+  },
+  "reference_operator": {
+    "provenance": "The operator selected by the upstream genesis run (scripts/ci/pireus_operator_genesis_bilinear.sh, selected_matrix=1128). Every field below is recomputed here from the phase code by an independent model; none is copied from an upstream receipt. Agreement is a cross-check between two implementations, not a transcription.",
+    "phase_code": 1128,
+    "quadratic_code": 198,
+    "affine_class": 26,
+    "associator_defects": 1848,
+    "commutator_defects": 90,
+    "anticommutator_failures": 120,
+    "basis_left_alternative_failures": 0,
+    "basis_right_alternative_failures": 0,
+    "basis_flexible_failures": 0,
+    "square_negatives": 5,
+    "unit_index": 0,
+    "reading": "A unital algebra on the same XOR grading as sed16, sharing its associator defect count of 1848 but commuting on 120 basis pairs where sed16 anticommutes, and with only 5 of 15 non-unit basis elements squaring to -1 instead of all 15."
+  },
+  "declared": {
+    "dimension": 16,
+    "tensor_components": 4096,
+    "tensor_encoding": "cd16-abk-offset1-v1",
+    "phase_code_space": 65536,
+    "v1_grammar_affine_classes": [0, 1, 2, 3],
+    "affine_classes_total": 32,
+    "phase_code_zero_recovers": "cayley_dickson_sed16",
+    "required_fields": [
+      "schema", "authority", "decision", "kind", "phase_code", "quadratic_code",
+      "affine_class", "novel_relative_to_v1_grammar", "tensor_components",
+      "tensor_encoding", "tensor_reconstruction_failures", "lane_stride",
+      "lane_offset", "associator_defects", "commutator_defects",
+      "anticommutator_failures", "basis_left_alternative_failures",
+      "basis_right_alternative_failures", "basis_flexible_failures",
+      "square_negatives", "unit_index", "fp_parity", "claim_ready",
+      "formal_v13_v14"
+    ],
+    "forbidden_field_substrings": [
+      "gain", "speedup", "promotion", "median_ppm", "eligible", "faster", "throughput"
+    ]
+  },
+  "invariants": {
+    "check_order": "The forbidden-substring scan runs before any field is read, because the claim boundary is the outer obligation: a receipt that both claims a gain and misstates its algebra is refused for the gain.",
+    "phase_zero_is_the_base": "sigma(0, i, j) == cd_sigma(i, j) for all 256 basis pairs, so the contract's own model degenerates to the Cayley-Dickson product it extends.",
+    "novelty_gates_admission": "decision == ADMIT requires novel_relative_to_v1_grammar == true.",
+    "tensor_gates_admission": "decision == ADMIT requires tensor_reconstruction_failures == 0.",
+    "refusal_is_admissible": "A correctly reasoned REFUSE receipt is an admissible receipt. The contract judges honesty of the decision, not its direction.",
+    "basis_restriction": "Every structural invariant is enumerated over basis elements only. A Cayley-Dickson algebra satisfies the alternative and flexible laws on basis elements at rungs where the whole algebra satisfies neither, so a zero in the basis_* fields is evidence, not proof."
+  },
+  "claim_boundary": {
+    "establishes_well_definedness": true,
+    "establishes_novelty_relative_to_v1_grammar": true,
+    "establishes_utility": false,
+    "establishes_material_parity": false,
+    "establishes_scientific_novelty": false,
+    "note": "Admission says the operator is well-defined, new relative to the grammar PIREUS already searches, and honestly described. It says nothing about whether the operator is worth materialising. No receipt admitted by this contract may carry a performance claim."
+  },
+  "open_obligations": {
+    "sio_admission_path": "admission.sio refuses kind != 1 at line 188 and its proposal parser is fixed at 16 keys. Admitting kind=2 upstream requires a 17th key for the phase code and a second legal `seen` mask. Not implemented here; this repository owns measurement, not the Sounio semantic authority.",
+    "material_acceptance": "Bit-exact parity against a reference is inapplicable. The proposed substitute at the material stratum is self-parity between two independent lowerings of the same phase code -- a direct scalar expansion and the XOR-graded lane path -- which falsifies lowering and sign-table errors without asserting utility. Not measured.",
+    "formal_v13_v14": "OPEN, unchanged."
+  }
+}

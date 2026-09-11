@@ -1,0 +1,79 @@
+{
+  "contract_id": "eisa_h.pireus_proposal_wire.v1",
+  "title": "PIREUS continuity proposal wire format",
+  "purpose": "State, executably, the language that admission.sio's hand-written parser accepts, and specify the minimal extension a kind=2 operator proposal requires.",
+  "why_this_exists": "The accepted language is entirely implicit in the parser's control flow. Nothing states it, so nothing can validate a proposal before the engine refuses it, nothing pins the language against drift, and anyone extending it works from prose. eisa_h.pireus_operator_admission.v1 leaves the .sio admission path open; this contract makes that change mechanical by pinning what the change has to preserve before anyone writes it.",
+  "provenance": {
+    "derived_by": "source_reading",
+    "source": "tools/pireus/continuity/admission.sio in Sounio-lang/sounio",
+    "executed_against_admission_sio": false,
+    "why_not": "This gate re-derives the v1 rules from admission.sio's text; it does not run the engine, so nothing here is a measurement of it. An earlier version of this field gave a different reason -- that the environment could not build a compiler at all, citing 27,294,756 KiB maximum child RSS for gen2 self-compilation against 15 GiB of container memory. That was wrong, and wrong in a way that kept the authority unexecuted: bin/souc is a committed binary, needs no bootstrap, and compiles admission.sio in about three seconds. The rules below were subsequently confirmed against a compiled engine.",
+    "how_to_confirm": "Every rule carries the admission.sio line it came from, so confirmation is a reading task rather than an investigation.",
+    "authority": "admission.sio is the authority. A disagreement between it and this contract is a defect in this contract until proven otherwise.",
+    "confirmed_against_compiled_engine": "eisa_h.pireus_admission_cross_engine.v1 (this repository) records receipts from a compiled admission.sio; scripts/ci/pireus_admission_engine_gate.sh in Sounio-lang/sounio compiles and interrogates it on every run."
+  },
+  "declared": {
+    "v1_keys": [
+      "schema",
+      "target",
+      "dimension",
+      "precision",
+      "order",
+      "fma",
+      "capabilities",
+      "lane_width",
+      "facts_state",
+      "kind",
+      "lane_stride",
+      "lane_offset",
+      "load",
+      "layout",
+      "unroll",
+      "context"
+    ],
+    "v2_added_key": "phase",
+    "v2_added_key_index": 16,
+    "v1_proposal_seen_mask": 65087,
+    "v2_proposal_seen_mask": 130623,
+    "context_key_index": 15,
+    "context_hex_length": 64,
+    "max_document_bytes": 4096,
+    "max_value_digits": 9
+  },
+  "language": {
+    "shape": "A single JSON object. Whitespace (space, tab, LF, CR) is skipped around structural tokens only. admission.sio:32.",
+    "keys": "Lowercase ASCII letters and underscore only; no key outside the table; no duplicates. admission.sio:52, :71.",
+    "values": "Nonnegative decimal integers of at most nine digits with no leading zero, except the context key, which is a quoted string of exactly 64 lowercase hex characters. There is no sign, no float, no negative. admission.sio:78-102.",
+    "termination": "The object must close immediately after a key-value pair, and only whitespace may follow the closing brace. admission.sio:106-112.",
+    "bounds": "The document is 1..4096 bytes and byte-indexed, so any multi-byte character breaks the parser's length invariant. admission.sio:40, :170.",
+    "one_encoding_per_value": "Leading zeros and uppercase hex are both refused, so each admissible value has exactly one wire encoding. That is what makes the proposal digest meaningful."
+  },
+  "extension": {
+    "principle": "One key, no other change to the language. A kind=2 proposal is a kind=1 proposal plus the 16-bit phase code that names the operator; every other field keeps its meaning, and the lane plan still applies because a proposed operator still has to be lowered.",
+    "why_a_17th_key_fails_today": "Not because the name is unknown. The parser loop is bounded at 16 pairs and sets valid only when the object closes inside the loop, so a 17-key document falls out of the loop and returns invalid. Extending the language therefore means raising the bound, not only adding a name.",
+    "required_edits": [
+      "admission.sio:14-30 key_name(): return \"phase\" for index 16.",
+      "admission.sio:45 parse(): `while count < 16` becomes `while count < 17`.",
+      "admission.sio:60 key lookup: `while k < 16` becomes `while k < 17`.",
+      "admission.sio:176 proposal mask: accept 65087 for kind=1 and 130623 for kind=2, and no other value.",
+      "admission.sio:188 kind gate: `if p.values[9] != 1` becomes a branch on kind 1 or 2, refusing everything else, and binding the mask to the kind so a phase key cannot ride along on a kind=1 proposal.",
+      "admission.sio:213-246 tensor reconstruction: for kind=2, reconstruct against the twisted product sigma_B rather than cd_sigma, where B is values[16]. The discipline is unchanged -- the engine computes the tensor, the proposer names only B.",
+      "admission.sio:247-250 materialisation guard: refuse for kind != 1. emit_lowering_ptx encodes the Cayley-Dickson signs and takes no phase argument, so for kind=2 it would emit the wrong operator silently.",
+      "admission.sio:251-258 receipt emitter: a kind=2 receipt carries the phase code and reports novelty NOT_CLASSIFIED, naming eisa_h.pireus_operator_atlas.v1 as the classifier. admission.sio cannot decide novelty: that needs the GL(4,2) atlas, which does not belong in a bounded executable reading a 4096-byte document."
+    ],
+    "no_struct_change_needed": "Document already declares `values: [i64; 18]` (admission.sio:9), so index 16 is free and the seen bitmask has room. The 4096-byte bound also holds: one more key costs at most 14 bytes.",
+    "not_in_scope": "This contract states what the edits must preserve. The patch that makes them lives in patches/sounio/ and has not been compiled or executed.",
+    "edit_count_correction": "This list said six until the patch was actually written. Building it revealed two more: the materialisation guard and the receipt emitter. The guard is the more serious omission -- a patch following the six-edit list would have left emit_lowering_ptx emitting Cayley-Dickson PTX for a twisted operator, silently and with a green admission receipt. Corrected here rather than left standing; the patch itself is verified against the corrected list by eisa_h.pireus_admission_patch.v1.",
+    "implemented_by": "patches/sounio/admission_kind2.patch, verified by eisa_h.pireus_admission_patch.v1"
+  },
+  "invariants": {
+    "wire_and_admission_are_separate_obligations": "A well-formed kind=2 document with phase code 0 is accepted by this contract and refused by eisa_h.pireus_operator_admission.v1 for lacking novelty. Conflating the two would let a parser decide a semantic question.",
+    "mask_is_exact": "A proposal carries fields 0..5 and 9..15, plus 16 when kind=2. Fields 6, 7 and 8 are context-only; a proposal that sets its own capabilities, lane width or facts state is refused."
+  },
+  "claim_boundary": {
+    "establishes_wire_admissibility": true,
+    "establishes_correspondence_with_admission_sio": false,
+    "establishes_semantic_admission": false,
+    "note": "This validates documents against a described language. It does not prove the description matches the engine -- that needs a compiler owner, or a host that can build souc -- and it decides nothing about whether a well-formed proposal should be admitted."
+  }
+}

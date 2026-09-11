@@ -1,0 +1,112 @@
+{
+  "contract_id": "eisa_h.pireus_admission_patch.v1",
+  "title": "PIREUS kind=2 admission patch",
+  "purpose": "Verify that patches/sounio/admission_kind2.patch is the patch eisa_h.pireus_proposal_wire.v1 describes, rather than asking a reviewer to take that on trust.",
+  "why_a_patch_and_not_a_pull_request": "admission.sio does not exist on Sounio-lang/sounio main. It is added by PR #2472, which is open and blocked on hosted-runner capacity. Basing a pull request on that branch would recreate exactly the orphaned-PR structure that PR #2439 had and that this work spent a night dismantling: a change with no open path to main. So the patch is delivered here, pinned by hash to the file it was produced against, and applied upstream once #2472 lands.",
+  "provenance": {
+    "target_repository": "Sounio-lang/sounio",
+    "target_path": "tools/pireus/continuity/admission.sio",
+    "base_branch": "pireus/08-continuity-harness",
+    "base_file_sha256": "cfed1c9479936167703a8718f9fb1e84db63b99fe526cb8a8f55129f22f35ace",
+    "patched_file_sha256": "b0b9e880f1723fe1ed83137edf0fe82976e1b024503b799293ff461540d3a975",
+    "compiled": false,
+    "executed": false,
+    "why_not": "gen2 self-compilation measured 27,294,756 KiB maximum child RSS on Slurm job 11991; this container has 15 GiB. Nothing here has been through souc.",
+    "lint": "PASS — scripts/dev/check_sounio.sh on the patched file reports Errors: 0. The linter was shown falsifiable on this same file by substituting `let mut` for `var`, which it rejects. Lint is a syntax and house-style check; it is not a typecheck and not a compile."
+  },
+  "scope_limit": {
+    "novelty_is_not_classified_here": "admission.sio cannot decide novelty. That needs the GL(4,2) atlas — 20,160 matrices and 336 admitted actions — which does not belong in a bounded admission executable that reads a 4096-byte document. The patched engine therefore emits novelty NOT_CLASSIFIED and names eisa_h.pireus_operator_atlas.v1 as the classifier.",
+    "consequence": "The patched engine's ADMIT for kind=2 is strictly weaker than eisa_h.pireus_operator_admission.v1's ADMIT, and the two must never be read as the same verdict. The engine says the operator is well-defined; the contract says it is also new and honestly described.",
+    "materialisation_stays_closed": "emit_lowering_ptx encodes the Cayley-Dickson signs and takes no phase argument, so for kind=2 it would emit the wrong operator silently. The patch refuses materialisation for kind != 1 rather than approximating it."
+  },
+  "what_building_it_revealed": "eisa_h.pireus_proposal_wire.v1 declared six required edits. Building the patch showed that count to be wrong: the receipt emitter and the materialisation guard both have to change too, and neither was listed. Eight is the real number. The wire contract has been corrected rather than left standing; an edit set that omits the fail-closed guard is the more dangerous of the two omissions, because a patch following it would have silently emitted Cayley-Dickson PTX for a twisted operator.",
+  "declared": {
+    "expected_added_lines": 64,
+    "expected_removed_lines": 6,
+    "required_edits": [
+      {
+        "id": "1_key_name",
+        "note": "key_name gains index 16.",
+        "removes": null,
+        "adds": "    if i == 16 { return \"phase\" }"
+      },
+      {
+        "id": "2_parse_loop_bound",
+        "note": "A 17-key document fails today by falling out of the bounded loop, not on an unknown key, so the bound is what has to move.",
+        "removes": "    while count < 16 {",
+        "adds": "    while count < 17 {"
+      },
+      {
+        "id": "3_key_lookup_bound",
+        "note": "The lookup must be able to reach the new name.",
+        "removes": "        while k < 16 {",
+        "adds": "        while k < 17 {"
+      },
+      {
+        "id": "4_proposal_mask",
+        "note": "Two legal masks and no others. Fields 6, 7 and 8 stay context-only under both.",
+        "removes": "    if !p.valid || p.seen != 65087 { return refuse(\"PROPOSAL_FORMAT\") }",
+        "adds": "    if p.seen != 65087 && p.seen != 130623 { return refuse(\"PROPOSAL_FORMAT\") }"
+      },
+      {
+        "id": "5_kind_gate",
+        "note": "The gate becomes a branch, still fail-closed on anything but 1 or 2, and binds the mask to the kind so a phase key cannot ride along on a kind=1 proposal.",
+        "removes": "    if p.values[9] != 1 { return refuse(\"KIND\") }",
+        "adds": "    if kind != 1 && kind != 2 { return refuse(\"KIND\") }"
+      },
+      {
+        "id": "6_tensor_reconstruction",
+        "note": "The tensor reconstructs against the twisted product. Phase code 0 returns cd_sigma unchanged, so the kind=1 path is unaffected by construction rather than by assertion.",
+        "removes": "                        reconstructed = reconstructed + cd_sigma(a as i32, b as i32, 4) as i64",
+        "adds": "                        reconstructed = reconstructed + sigma_phase(twist, a, b)"
+      },
+      {
+        "id": "7_materialize_guard",
+        "note": "Not in the wire contract's original six. Materialisation is refused for kind != 1 because the PTX emitter has no phase argument.",
+        "removes": null,
+        "adds": "        if kind != 1 { return refuse(\"MATERIALIZE_KIND\") }"
+      },
+      {
+        "id": "8_kind2_receipt",
+        "note": "Not in the original six. The kind=2 receipt reports what this engine established and names who must decide the rest.",
+        "removes": null,
+        "adds": "        print(\",\\\"classifier\\\":\\\"eisa_h.pireus_operator_atlas.v1\\\"\")"
+      }
+    ],
+    "must_not_remove": [
+      "    if c.values[8] != 1 { return refuse(\"UNKNOWN_OR_CONTRADICTORY_FACTS\") }",
+      "    if !hash_matches(hash_text(cs, cn), &p) { return refuse(\"SNAPSHOT\") }",
+      "    if failures != 0 { return refuse(\"TENSOR\") }",
+      "        if lanes[i as usize] != 1 { return refuse(\"LANE_COVERAGE\") }",
+      "    if c.values[1] != 701202 || p.values[1] != c.values[1] { return refuse(\"TARGET\") }"
+    ],
+    "added_lines_must_contain": [
+      "NOT_CLASSIFIED",
+      "eisa_h.pireus_operator_atlas.v1",
+      "MATERIALIZE_KIND",
+      "PHASE_RANGE",
+      "\\\"claim_ready\\\":false"
+    ],
+    "added_lines_must_not_contain": [
+      "gain",
+      "speedup",
+      "claim_ready\\\":true",
+      "scientific_novelty",
+      "priority_claim"
+    ]
+  },
+  "claim_boundary": {
+    "establishes_patch_matches_declared_edits": true,
+    "establishes_lint_clean": true,
+    "establishes_correctness": false,
+    "establishes_novelty_classification": false,
+    "establishes_compilation": false,
+    "note": "A green gate means the patch says what it claims to say and is syntactically well-formed. It does not mean the patched engine typechecks, compiles, or behaves correctly. That needs souc on a host that fits gen2."
+  },
+  "how_to_apply": {
+    "precondition": "PR #2472 merged, so tools/pireus/continuity/admission.sio exists on main.",
+    "verify_base": "sha256sum tools/pireus/continuity/admission.sio must equal base_file_sha256 above; if it differs the patch is stale and must be regenerated.",
+    "apply": "git apply patches/sounio/admission_kind2.patch from the Sounio repository root.",
+    "verify_result": "sha256sum must equal patched_file_sha256; then bash check_sounio.sh, then a real typecheck and the continuity suites on a host that fits gen2."
+  }
+}
