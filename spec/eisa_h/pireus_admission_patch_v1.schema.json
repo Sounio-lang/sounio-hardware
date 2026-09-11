@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "eisa_h.pireus_admission_patch.v1 contract",
+  "type": "object",
+  "required": ["contract_id", "title", "purpose", "why_a_patch_and_not_a_pull_request",
+               "provenance", "scope_limit", "what_building_it_revealed", "declared",
+               "claim_boundary", "how_to_apply"],
+  "properties": {
+    "contract_id": { "const": "eisa_h.pireus_admission_patch.v1" },
+    "provenance": {
+      "type": "object",
+      "required": ["target_repository", "target_path", "base_branch",
+                   "base_file_sha256", "patched_file_sha256", "compiled",
+                   "executed", "why_not", "lint"],
+      "properties": {
+        "compiled": { "const": false },
+        "executed": { "const": false }
+      }
+    },
+    "declared": {
+      "type": "object",
+      "required": ["expected_added_lines", "expected_removed_lines",
+                   "required_edits", "must_not_remove",
+                   "added_lines_must_contain", "added_lines_must_not_contain"]
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": ["establishes_patch_matches_declared_edits", "establishes_lint_clean",
+                   "establishes_correctness", "establishes_novelty_classification",
+                   "establishes_compilation"],
+      "properties": {
+        "establishes_correctness": { "const": false },
+        "establishes_novelty_classification": { "const": false },
+        "establishes_compilation": { "const": false }
+      }
+    }
+  }
+}

@@ -12,10 +12,24 @@
     "authority": "admission.sio is the authority. A disagreement between it and this contract is a defect in this contract until proven otherwise."
   },
   "declared": {
-    "v1_keys": ["schema", "target", "dimension", "precision", "order", "fma",
-                "capabilities", "lane_width", "facts_state", "kind",
-                "lane_stride", "lane_offset", "load", "layout", "unroll",
-                "context"],
+    "v1_keys": [
+      "schema",
+      "target",
+      "dimension",
+      "precision",
+      "order",
+      "fma",
+      "capabilities",
+      "lane_width",
+      "facts_state",
+      "kind",
+      "lane_stride",
+      "lane_offset",
+      "load",
+      "layout",
+      "unroll",
+      "context"
+    ],
     "v2_added_key": "phase",
     "v2_added_key_index": 16,
     "v1_proposal_seen_mask": 65087,
@@ -41,11 +55,15 @@
       "admission.sio:45 parse(): `while count < 16` becomes `while count < 17`.",
       "admission.sio:60 key lookup: `while k < 16` becomes `while k < 17`.",
       "admission.sio:176 proposal mask: accept 65087 for kind=1 and 130623 for kind=2, and no other value.",
-      "admission.sio:188 kind gate: `if p.values[9] != 1` becomes a branch on kind 1 or 2, refusing everything else.",
-      "admission.sio:213-246 tensor reconstruction: for kind=2, reconstruct against the twisted product sigma_B rather than cd_sigma, where B is values[16]. The discipline is unchanged -- the engine computes the tensor, the proposer names only B."
+      "admission.sio:188 kind gate: `if p.values[9] != 1` becomes a branch on kind 1 or 2, refusing everything else, and binding the mask to the kind so a phase key cannot ride along on a kind=1 proposal.",
+      "admission.sio:213-246 tensor reconstruction: for kind=2, reconstruct against the twisted product sigma_B rather than cd_sigma, where B is values[16]. The discipline is unchanged -- the engine computes the tensor, the proposer names only B.",
+      "admission.sio:247-250 materialisation guard: refuse for kind != 1. emit_lowering_ptx encodes the Cayley-Dickson signs and takes no phase argument, so for kind=2 it would emit the wrong operator silently.",
+      "admission.sio:251-258 receipt emitter: a kind=2 receipt carries the phase code and reports novelty NOT_CLASSIFIED, naming eisa_h.pireus_operator_atlas.v1 as the classifier. admission.sio cannot decide novelty: that needs the GL(4,2) atlas, which does not belong in a bounded executable reading a 4096-byte document."
     ],
     "no_struct_change_needed": "Document already declares `values: [i64; 18]` (admission.sio:9), so index 16 is free and the seen bitmask has room. The 4096-byte bound also holds: one more key costs at most 14 bytes.",
-    "not_in_scope": "This contract does not make those edits and does not authorise them. It states what they must preserve."
+    "not_in_scope": "This contract states what the edits must preserve. The patch that makes them lives in patches/sounio/ and has not been compiled or executed.",
+    "edit_count_correction": "This list said six until the patch was actually written. Building it revealed two more: the materialisation guard and the receipt emitter. The guard is the more serious omission -- a patch following the six-edit list would have left emit_lowering_ptx emitting Cayley-Dickson PTX for a twisted operator, silently and with a green admission receipt. Corrected here rather than left standing; the patch itself is verified against the corrected list by eisa_h.pireus_admission_patch.v1.",
+    "implemented_by": "patches/sounio/admission_kind2.patch, verified by eisa_h.pireus_admission_patch.v1"
   },
   "invariants": {
     "wire_and_admission_are_separate_obligations": "A well-formed kind=2 document with phase code 0 is accepted by this contract and refused by eisa_h.pireus_operator_admission.v1 for lacking novelty. Conflating the two would let a parser decide a semantic question.",
