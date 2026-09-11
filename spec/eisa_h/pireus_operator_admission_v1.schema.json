@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "eisa_h.pireus_operator_admission.v1 contract",
+  "type": "object",
+  "required": [
+    "contract_id", "title", "purpose", "why_this_exists", "admission_criteria",
+    "reference_operator", "declared", "invariants", "claim_boundary",
+    "open_obligations"
+  ],
+  "properties": {
+    "contract_id": { "const": "eisa_h.pireus_operator_admission.v1" },
+    "reference_operator": {
+      "type": "object",
+      "required": [
+        "provenance", "phase_code", "quadratic_code", "affine_class",
+        "associator_defects", "commutator_defects", "anticommutator_failures",
+        "basis_left_alternative_failures", "basis_right_alternative_failures",
+        "basis_flexible_failures", "square_negatives", "unit_index"
+      ],
+      "properties": {
+        "phase_code": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "unit_index": { "type": "integer", "minimum": -1, "maximum": 15 }
+      }
+    },
+    "declared": {
+      "type": "object",
+      "required": [
+        "dimension", "tensor_components", "tensor_encoding", "phase_code_space",
+        "v1_grammar_affine_classes", "affine_classes_total", "required_fields",
+        "forbidden_field_substrings"
+      ]
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": [
+        "establishes_well_definedness", "establishes_novelty_relative_to_v1_grammar",
+        "establishes_utility", "establishes_material_parity",
+        "establishes_scientific_novelty"
+      ],
+      "properties": {
+        "establishes_utility": { "const": false },
+        "establishes_material_parity": { "const": false },
+        "establishes_scientific_novelty": { "const": false }
+      }
+    }
+  }
+}
